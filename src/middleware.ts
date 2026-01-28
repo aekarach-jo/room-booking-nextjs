@@ -4,12 +4,14 @@ import { verifyTokenEdge, type JwtPayload } from './lib/auth-edge';
 
 // Routes that require authentication
 const protectedRoutes = [
-  '/dashboard',
   '/bookings',
   '/calendar',
   '/history',
   '/recurring',
   '/announcements',
+  '/notifications',
+  '/profile',
+  '/settings',
 ];
 
 // Routes that require admin role (STAFF or DEPARTMENT_HEAD)
@@ -72,8 +74,8 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Handle protected routes
-  const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
+  // Handle protected routes (including root path)
+  const isProtectedRoute = pathname === '/' || protectedRoutes.some(route => pathname.startsWith(route));
   const isAdminRoute = adminRoutes.some(route => pathname.startsWith(route));
 
   if (isProtectedRoute || isAdminRoute) {

@@ -63,8 +63,8 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       {/* Sidebar */}
       <aside
         className={cn(
-          'fixed left-0 top-0 z-50 h-full w-64 bg-linear-to-b from-sidebar via-sidebar to-sidebar/95 border-r border-sidebar-border shadow-xl transform transition-transform duration-300 ease-out lg:translate-x-0 lg:static lg:z-auto',
-          isOpen ? 'translate-x-0' : '-translate-x-full'
+          'fixed left-0 top-0 z-40 h-full w-64 bg-linear-to-b from-sidebar via-sidebar to-sidebar/95 border-r border-sidebar-border shadow-xl transform transition-transform duration-300 ease-out lg:translate-x-0',
+          isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         )}
       >
         <div className="flex flex-col h-full">
