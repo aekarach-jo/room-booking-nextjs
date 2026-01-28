@@ -1,6 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { verifyAuth, isAdmin } from '@/lib/auth';
+import { RoomType } from '@prisma/client';
+
+interface RoomWithBookings {
+  id: string;
+  name: string;
+  type: RoomType;
+  openTime: string | null;
+  closeTime: string | null;
+  bookings: {
+    startTime: Date;
+    endTime: Date;
+  }[];
+}
 
 // GET /api/analytics/room-usage
 export async function GET(request: NextRequest) {
@@ -26,12 +39,7 @@ export async function GET(request: NextRequest) {
 
     const rooms = await prisma.room.findMany({
       where: { isActive: true },
-      select: {
-        id: true,
-        name: true,
-        type: true,
-        openTime: true,
-        closeTime: true,
+      include: {
         bookings: {
           where: {
             date: { gte: start, lte: end },
@@ -43,7 +51,7 @@ export async function GET(request: NextRequest) {
           },
         },
       },
-    });
+    }) as unknown as RoomWithBookings[];
 
     const roomUsage = rooms.map(room => {
       // Calculate total booked hours
