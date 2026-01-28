@@ -48,7 +48,11 @@
     "alreadyHaveAccount": "Already have an account?",
     "dontHaveAccount": "Don't have an account?",
     "loginButton": "Login",
-    "registerButton": "Register"
+    "registerButton": "Register",
+    "loginWithRMUTI": "Login with RMUTI Account",
+    "redirecting": "Redirecting...",
+    "orContinueWith": "or continue with",
+    "ssoDescription": "Use your university account to login"
   },
   "navigation": {
     "dashboard": "Dashboard",

@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { useTranslation } from '@/context/LanguageContext';
 import { Button } from '@/components/ui/button';
@@ -11,15 +12,25 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { toast } from 'sonner';
 import { Loader2, Building2 } from 'lucide-react';
 import { LanguageSwitcher } from '@/components/layout/LanguageSwitcher';
+import { RMUTILoginButton } from '@/components/auth/RMUTILoginButton';
 
 export default function LoginPage() {
   const { login } = useAuth();
   const { t } = useTranslation();
+  const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     username: '',
     password: '',
   });
+
+  // Check for SSO error in URL
+  useEffect(() => {
+    const error = searchParams.get('error');
+    if (error) {
+      toast.error(decodeURIComponent(error));
+    }
+  }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -83,6 +94,25 @@ export default function LoginPage() {
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {t('auth.loginButton')}
           </Button>
+
+          {/* Divider */}
+          <div className="relative w-full">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-muted-foreground/20" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-card px-2 text-muted-foreground">
+                {t('auth.orContinueWith')}
+              </span>
+            </div>
+          </div>
+
+          {/* RMUTI SSO Button */}
+          <RMUTILoginButton className="w-full h-11 rounded-xl" />
+          <p className="text-xs text-center text-muted-foreground">
+            {t('auth.ssoDescription')}
+          </p>
+
           <p className="text-sm text-center text-muted-foreground">
             {t('auth.dontHaveAccount')}{' '}
             <Link href="/register" className="text-primary font-medium hover:underline underline-offset-4">

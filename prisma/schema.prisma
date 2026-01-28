@@ -74,6 +74,9 @@ model User {
   department String?
   year       Int?
 
+  // RMUTI SSO Integration
+  rmutiId String? @unique // RMUTI User ID from SSO
+
   role     Role    @default(STUDENT)
   isActive Boolean @default(true)
 

@@ -48,7 +48,11 @@
     "alreadyHaveAccount": "มีบัญชีอยู่แล้ว?",
     "dontHaveAccount": "ยังไม่มีบัญชี?",
     "loginButton": "เข้าสู่ระบบ",
-    "registerButton": "สมัครสมาชิก"
+    "registerButton": "สมัครสมาชิก",
+    "loginWithRMUTI": "เข้าสู่ระบบด้วยบัญชี RMUTI",
+    "redirecting": "กำลังเปลี่ยนเส้นทาง...",
+    "orContinueWith": "หรือเข้าสู่ระบบด้วย",
+    "ssoDescription": "ใช้บัญชีมหาวิทยาลัยเพื่อเข้าสู่ระบบ"
   },
   "navigation": {
     "dashboard": "แดชบอร์ด",
