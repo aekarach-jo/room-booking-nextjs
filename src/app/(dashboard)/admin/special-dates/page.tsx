@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslation } from '@/context/LanguageContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -31,6 +32,7 @@ const DATE_TYPES = [
 ];
 
 export default function SpecialDatesPage() {
+  const { t } = useTranslation();
   const [specialDates, setSpecialDates] = useState<SpecialDate[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -107,7 +109,7 @@ export default function SpecialDatesPage() {
       });
 
       if (res.ok) {
-        toast.success(editingDate ? 'Special date updated successfully' : 'Special date created successfully');
+        toast.success(editingDate ? t('success.updated') : t('success.created'));
         setIsDialogOpen(false);
         resetForm();
         fetchSpecialDates();
@@ -133,10 +135,10 @@ export default function SpecialDatesPage() {
       });
 
       if (res.ok) {
-        toast.success('Special date deleted successfully');
+        toast.success(t('success.deleted'));
         fetchSpecialDates();
       } else {
-        toast.error('Failed to delete special date');
+        toast.error(t('errors.somethingWentWrong'));
       }
     } catch (error) {
       console.error('Error:', error);
@@ -180,8 +182,7 @@ export default function SpecialDatesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Special Dates</h1>
-          <p className="text-muted-foreground">Manage holidays and special dates that affect room availability</p>
+          <h1 className="text-2xl font-bold">{t('admin.specialDates.title')}</h1>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={(open) => { setIsDialogOpen(open); if (!open) resetForm(); }}>
           <DialogTrigger asChild>

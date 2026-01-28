@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
+import { useTranslation } from '@/context/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -10,9 +11,11 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { Loader2, Building2 } from 'lucide-react';
+import { LanguageSwitcher } from '@/components/layout/LanguageSwitcher';
 
 export default function RegisterPage() {
   const { register } = useAuth();
+  const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     username: '',
@@ -30,12 +33,12 @@ export default function RegisterPage() {
     e.preventDefault();
 
     if (formData.password !== formData.confirmPassword) {
-      toast.error('Passwords do not match');
+      toast.error(t('errors.passwordMismatch'));
       return;
     }
 
     if (formData.password.length < 6) {
-      toast.error('Password must be at least 6 characters');
+      toast.error(t('errors.invalidPassword'));
       return;
     }
 
@@ -52,9 +55,9 @@ export default function RegisterPage() {
         department: formData.department || undefined,
         year: formData.role === 'STUDENT' && formData.year ? parseInt(formData.year) : undefined,
       });
-      toast.success('Registration successful!');
+      toast.success(t('success.created'));
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Registration failed');
+      toast.error(error instanceof Error ? error.message : t('errors.somethingWentWrong'));
     } finally {
       setIsLoading(false);
     }
@@ -63,22 +66,25 @@ export default function RegisterPage() {
   return (
     <Card className="w-full max-w-md shadow-xl border-0 bg-card/80 backdrop-blur-sm">
       <CardHeader className="space-y-1 text-center pb-6">
+        <div className="absolute top-4 right-4">
+          <LanguageSwitcher />
+        </div>
         <div className="flex justify-center mb-4">
           <div className="p-4 bg-primary rounded-2xl shadow-lg shadow-primary/25">
             <Building2 className="h-10 w-10 text-primary-foreground" />
           </div>
         </div>
-        <CardTitle className="text-2xl font-bold tracking-tight">Create Account</CardTitle>
-        <CardDescription className="text-muted-foreground">Register to start booking rooms</CardDescription>
+        <CardTitle className="text-2xl font-bold tracking-tight">{t('auth.registerTitle')}</CardTitle>
+        <CardDescription className="text-muted-foreground">{t('auth.registerDescription')}</CardDescription>
       </CardHeader>
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-4 px-6">
           <div className="space-y-2">
-            <Label htmlFor="fullName" className="text-sm font-medium">Full Name</Label>
+            <Label htmlFor="fullName" className="text-sm font-medium">{t('auth.fullName')}</Label>
             <Input
               id="fullName"
               type="text"
-              placeholder="Enter your full name"
+              placeholder={t('auth.fullName')}
               value={formData.fullName}
               onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
               required
@@ -88,11 +94,11 @@ export default function RegisterPage() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="username" className="text-sm font-medium">Username</Label>
+            <Label htmlFor="username" className="text-sm font-medium">{t('auth.username')}</Label>
             <Input
               id="username"
               type="text"
-              placeholder="Choose a username"
+              placeholder={t('auth.username')}
               value={formData.username}
               onChange={(e) => setFormData({ ...formData, username: e.target.value })}
               required
@@ -103,11 +109,11 @@ export default function RegisterPage() {
 
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-sm font-medium">Password</Label>
+              <Label htmlFor="password" className="text-sm font-medium">{t('auth.password')}</Label>
               <Input
                 id="password"
                 type="password"
-                placeholder="Password"
+                placeholder={t('auth.password')}
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                 required
@@ -116,11 +122,11 @@ export default function RegisterPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword" className="text-sm font-medium">Confirm</Label>
+              <Label htmlFor="confirmPassword" className="text-sm font-medium">{t('auth.confirmPassword')}</Label>
               <Input
                 id="confirmPassword"
                 type="password"
-                placeholder="Confirm"
+                placeholder={t('auth.confirmPassword')}
                 value={formData.confirmPassword}
                 onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                 required
@@ -198,11 +204,11 @@ export default function RegisterPage() {
           )}
 
           <div className="space-y-2">
-            <Label htmlFor="department" className="text-sm font-medium">Department</Label>
+            <Label htmlFor="department" className="text-sm font-medium">{t('auth.department')}</Label>
             <Input
               id="department"
               type="text"
-              placeholder="e.g., Computer Science"
+              placeholder={t('auth.department')}
               value={formData.department}
               onChange={(e) => setFormData({ ...formData, department: e.target.value })}
               disabled={isLoading}
@@ -213,12 +219,12 @@ export default function RegisterPage() {
         <CardFooter className="flex flex-col space-y-4 px-6 pb-8 pt-2">
           <Button type="submit" className="w-full h-11 rounded-xl font-semibold shadow-md shadow-primary/25 hover:shadow-lg hover:shadow-primary/30 transition-all" disabled={isLoading}>
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Create Account
+            {t('auth.registerButton')}
           </Button>
           <p className="text-sm text-center text-muted-foreground">
-            Already have an account?{' '}
+            {t('auth.alreadyHaveAccount')}{' '}
             <Link href="/login" className="text-primary font-medium hover:underline underline-offset-4">
-              Sign in
+              {t('auth.login')}
             </Link>
           </p>
         </CardFooter>

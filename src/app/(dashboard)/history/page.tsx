@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslation } from '@/context/LanguageContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -25,6 +26,7 @@ interface Booking {
 }
 
 export default function HistoryPage() {
+  const { t } = useTranslation();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -93,15 +95,15 @@ export default function HistoryPage() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'APPROVED':
-        return <Badge className="bg-green-500">Approved</Badge>;
+        return <Badge className="bg-green-500">{t('booking.status.approved')}</Badge>;
       case 'COMPLETED':
-        return <Badge className="bg-blue-500">Completed</Badge>;
+        return <Badge className="bg-blue-500">{t('booking.status.completed')}</Badge>;
       case 'PENDING':
-        return <Badge variant="secondary">Pending</Badge>;
+        return <Badge variant="secondary">{t('booking.status.pending')}</Badge>;
       case 'REJECTED':
-        return <Badge variant="destructive">Rejected</Badge>;
+        return <Badge variant="destructive">{t('booking.status.rejected')}</Badge>;
       case 'CANCELLED':
-        return <Badge variant="outline">Cancelled</Badge>;
+        return <Badge variant="outline">{t('booking.status.cancelled')}</Badge>;
       default:
         return <Badge>{status}</Badge>;
     }
@@ -110,8 +112,7 @@ export default function HistoryPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Booking History</h1>
-        <p className="text-muted-foreground">View your past room bookings</p>
+        <h1 className="text-2xl font-bold">{t('navigation.history')}</h1>
       </div>
 
       {/* Filters */}
@@ -121,7 +122,7 @@ export default function HistoryPage() {
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search by room name or purpose..."
+                placeholder={t('common.search')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
@@ -140,7 +141,7 @@ export default function HistoryPage() {
                 <SelectItem value="CANCELLED">Cancelled</SelectItem>
               </SelectContent>
             </Select>
-            <Button type="submit">Search</Button>
+            <Button type="submit">{t('common.search')}</Button>
           </form>
         </CardContent>
       </Card>

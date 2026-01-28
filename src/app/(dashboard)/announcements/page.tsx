@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslation } from '@/context/LanguageContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Pin, AlertTriangle, Info, AlertCircle } from 'lucide-react';
@@ -18,6 +19,7 @@ interface Announcement {
 }
 
 export default function AnnouncementsPage() {
+  const { t } = useTranslation();
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -84,14 +86,13 @@ export default function AnnouncementsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Announcements</h1>
-        <p className="text-muted-foreground">Latest news and updates</p>
+        <h1 className="text-2xl font-bold">{t('announcement.title')}</h1>
       </div>
 
       {announcements.length === 0 ? (
         <Card>
           <CardContent className="py-8 text-center">
-            <p className="text-muted-foreground">No announcements</p>
+            <p className="text-muted-foreground">{t('announcement.noAnnouncements')}</p>
           </CardContent>
         </Card>
       ) : (

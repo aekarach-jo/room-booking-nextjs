@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslation } from '@/context/LanguageContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -39,6 +40,7 @@ interface Booking {
 }
 
 export default function MyBookingsPage() {
+  const { t } = useTranslation();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
@@ -57,7 +59,7 @@ export default function MyBookingsPage() {
       }
     } catch (error) {
       console.error('Error fetching bookings:', error);
-      toast.error('Failed to load bookings');
+      toast.error(t('errors.somethingWentWrong'));
     } finally {
       setIsLoading(false);
     }
@@ -81,10 +83,10 @@ export default function MyBookingsPage() {
         throw new Error(error.error || 'Failed to cancel booking');
       }
 
-      toast.success('Booking cancelled');
+      toast.success(t('booking.bookingCancelled'));
       fetchBookings(activeTab === 'upcoming');
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to cancel booking');
+      toast.error(error instanceof Error ? error.message : t('errors.somethingWentWrong'));
     } finally {
       setCancelDialogOpen(false);
       setSelectedBooking(null);
@@ -103,10 +105,10 @@ export default function MyBookingsPage() {
         throw new Error(error.error || 'Failed to check in');
       }
 
-      toast.success('Checked in successfully');
+      toast.success(t('success.updated'));
       fetchBookings(true);
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to check in');
+      toast.error(error instanceof Error ? error.message : t('errors.somethingWentWrong'));
     }
   };
 
@@ -122,10 +124,10 @@ export default function MyBookingsPage() {
         throw new Error(error.error || 'Failed to check out');
       }
 
-      toast.success('Checked out successfully');
+      toast.success(t('success.updated'));
       fetchBookings(true);
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to check out');
+      toast.error(error instanceof Error ? error.message : t('errors.somethingWentWrong'));
     }
   };
 

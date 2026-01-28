@@ -1,6 +1,7 @@
 'use client';
 
 import { useTheme } from '@/context/ThemeContext';
+import { useTranslation } from '@/context/LanguageContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -8,18 +9,17 @@ import { Sun, Moon, Monitor } from 'lucide-react';
 
 export default function SettingsPage() {
   const { theme, setTheme } = useTheme();
+  const { t } = useTranslation();
 
   return (
     <div className="space-y-6 max-w-2xl mx-auto">
       <div>
-        <h1 className="text-2xl font-bold">Settings</h1>
-        <p className="text-muted-foreground">Manage your preferences</p>
+        <h1 className="text-2xl font-bold">{t('settings.title')}</h1>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Appearance</CardTitle>
-          <CardDescription>Customize how the application looks</CardDescription>
+          <CardTitle>{t('settings.theme')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -40,7 +40,7 @@ export default function SettingsPage() {
                   className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
                 >
                   <Sun className="mb-3 h-6 w-6" />
-                  Light
+                  {t('settings.lightTheme')}
                 </Label>
               </div>
               <div>
@@ -54,7 +54,7 @@ export default function SettingsPage() {
                   className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
                 >
                   <Moon className="mb-3 h-6 w-6" />
-                  Dark
+                  {t('settings.darkTheme')}
                 </Label>
               </div>
               <div>
@@ -68,7 +68,7 @@ export default function SettingsPage() {
                   className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
                 >
                   <Monitor className="mb-3 h-6 w-6" />
-                  System
+                  {t('settings.systemTheme')}
                 </Label>
               </div>
             </RadioGroup>
@@ -78,8 +78,7 @@ export default function SettingsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Notifications</CardTitle>
-          <CardDescription>Configure notification preferences</CardDescription>
+          <CardTitle>{t('notification.title')}</CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground">

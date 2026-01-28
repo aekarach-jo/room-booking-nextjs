@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslation } from '@/context/LanguageContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -28,6 +29,7 @@ interface Room {
 
 export default function BookingPage() {
   const router = useRouter();
+  const { t } = useTranslation();
   const [rooms, setRooms] = useState<Room[]>([]);
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -54,7 +56,7 @@ export default function BookingPage() {
         }
       } catch (error) {
         console.error('Error fetching rooms:', error);
-        toast.error('Failed to load rooms');
+        toast.error(t('errors.somethingWentWrong'));
       } finally {
         setIsLoading(false);
       }
@@ -73,7 +75,7 @@ export default function BookingPage() {
     e.preventDefault();
 
     if (!formData.roomId || !formData.date || !formData.startTime || !formData.endTime) {
-      toast.error('Please fill in all required fields');
+      toast.error(t('errors.required'));
       return;
     }
 
@@ -82,7 +84,7 @@ export default function BookingPage() {
     const endDateTime = new Date(`${formData.date}T${formData.endTime}`);
 
     if (endDateTime <= startDateTime) {
-      toast.error('End time must be after start time');
+      toast.error(t('errors.somethingWentWrong'));
       return;
     }
 
@@ -108,10 +110,10 @@ export default function BookingPage() {
         throw new Error(error.error || 'Failed to create booking');
       }
 
-      toast.success('Booking created successfully!');
+      toast.success(t('booking.bookingSuccess'));
       router.push('/bookings/my');
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to create booking');
+      toast.error(error instanceof Error ? error.message : t('booking.bookingFailed'));
     } finally {
       setIsSubmitting(false);
     }
@@ -142,8 +144,8 @@ export default function BookingPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Book a Room</h1>
-        <p className="text-muted-foreground">Select a room and time slot for your booking</p>
+        <h1 className="text-2xl font-bold">{t('navigation.bookRoom')}</h1>
+        <p className="text-muted-foreground">{t('booking.selectRoom')}</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -151,8 +153,7 @@ export default function BookingPage() {
         <div className="lg:col-span-2 space-y-4">
           <Card className="border-0 shadow-md">
             <CardHeader>
-              <CardTitle>Select a Room</CardTitle>
-              <CardDescription>Choose from available rooms</CardDescription>
+              <CardTitle>{t('booking.selectRoom')}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -175,7 +176,7 @@ export default function BookingPage() {
                         <div className="p-1 rounded-md bg-muted">
                           <Users className="h-3.5 w-3.5" />
                         </div>
-                        <span>Capacity: {room.capacity}</span>
+                        <span>{t('room.capacity')}: {room.capacity}</span>
                       </div>
                       {room.building && (
                         <div className="flex items-center gap-2">
@@ -217,15 +218,15 @@ export default function BookingPage() {
         <div>
           <Card className="border-0 shadow-md sticky top-20">
             <CardHeader>
-              <CardTitle>Booking Details</CardTitle>
+              <CardTitle>{t('booking.bookingDetails')}</CardTitle>
               <CardDescription>
-                {selectedRoom ? `Booking: ${selectedRoom.name}` : 'Select a room first'}
+                {selectedRoom ? `${t('booking.title')}: ${selectedRoom.name}` : t('booking.selectRoom')}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="date" className="text-sm font-medium">Date</Label>
+                  <Label htmlFor="date" className="text-sm font-medium">{t('common.date')}</Label>
                   <Input
                     id="date"
                     type="date"
@@ -240,7 +241,7 @@ export default function BookingPage() {
 
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-2">
-                    <Label htmlFor="startTime" className="text-sm font-medium">Start Time</Label>
+                    <Label htmlFor="startTime" className="text-sm font-medium">{t('booking.startTime')}</Label>
                     <Input
                       id="startTime"
                       type="time"
@@ -252,7 +253,7 @@ export default function BookingPage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="endTime" className="text-sm font-medium">End Time</Label>
+                    <Label htmlFor="endTime" className="text-sm font-medium">{t('booking.endTime')}</Label>
                     <Input
                       id="endTime"
                       type="time"
@@ -286,10 +287,10 @@ export default function BookingPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="purpose" className="text-sm font-medium">Purpose</Label>
+                  <Label htmlFor="purpose" className="text-sm font-medium">{t('booking.purpose')}</Label>
                   <Textarea
                     id="purpose"
-                    placeholder="What will you use the room for?"
+                    placeholder={t('booking.purpose')}
                     value={formData.purpose}
                     onChange={(e) => setFormData({ ...formData, purpose: e.target.value })}
                     required
@@ -312,7 +313,7 @@ export default function BookingPage() {
                   disabled={!selectedRoom || isSubmitting}
                 >
                   {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Create Booking
+                  {t('booking.bookNow')}
                 </Button>
               </form>
             </CardContent>

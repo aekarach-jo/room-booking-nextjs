@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslation } from '@/context/LanguageContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -35,6 +36,7 @@ const ANNOUNCEMENT_TYPES = [
 ];
 
 export default function AnnouncementsPage() {
+  const { t } = useTranslation();
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -119,7 +121,7 @@ export default function AnnouncementsPage() {
       });
 
       if (res.ok) {
-        toast.success(editingAnnouncement ? 'Announcement updated successfully' : 'Announcement created successfully');
+        toast.success(editingAnnouncement ? t('success.updated') : t('success.created'));
         setIsDialogOpen(false);
         resetForm();
         fetchAnnouncements();
@@ -145,10 +147,10 @@ export default function AnnouncementsPage() {
       });
 
       if (res.ok) {
-        toast.success('Announcement deleted successfully');
+        toast.success(t('success.deleted'));
         fetchAnnouncements();
       } else {
-        toast.error('Failed to delete announcement');
+        toast.error(t('errors.somethingWentWrong'));
       }
     } catch (error) {
       console.error('Error:', error);

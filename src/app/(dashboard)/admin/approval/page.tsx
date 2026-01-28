@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslation } from '@/context/LanguageContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -33,6 +34,7 @@ interface Booking {
 }
 
 export default function ApprovalPage() {
+  const { t } = useTranslation();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -94,7 +96,7 @@ export default function ApprovalPage() {
       });
 
       if (res.ok) {
-        toast.success(`Booking ${actionType === 'approve' ? 'approved' : 'rejected'} successfully`);
+        toast.success(actionType === 'approve' ? t('success.updated') : t('success.updated'));
         setSelectedBooking(null);
         setActionType(null);
         setRejectReason('');
@@ -129,13 +131,13 @@ export default function ApprovalPage() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'APPROVED':
-        return <Badge className="bg-green-500">Approved</Badge>;
+        return <Badge className="bg-green-500">{t('booking.status.approved')}</Badge>;
       case 'PENDING':
-        return <Badge variant="secondary">Pending</Badge>;
+        return <Badge variant="secondary">{t('booking.status.pending')}</Badge>;
       case 'REJECTED':
-        return <Badge variant="destructive">Rejected</Badge>;
+        return <Badge variant="destructive">{t('booking.status.rejected')}</Badge>;
       case 'CANCELLED':
-        return <Badge variant="outline">Cancelled</Badge>;
+        return <Badge variant="outline">{t('booking.status.cancelled')}</Badge>;
       default:
         return <Badge>{status}</Badge>;
     }
@@ -144,8 +146,7 @@ export default function ApprovalPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Booking Approvals</h1>
-        <p className="text-muted-foreground">Review and manage booking requests</p>
+        <h1 className="text-2xl font-bold">{t('admin.approval.title')}</h1>
       </div>
 
       <Tabs value={statusFilter} onValueChange={(v) => { setStatusFilter(v); setPage(1); }}>

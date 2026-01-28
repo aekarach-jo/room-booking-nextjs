@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslation } from '@/context/LanguageContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -51,6 +52,7 @@ const DAYS_OF_WEEK = [
 ];
 
 export default function RecurringBookingsPage() {
+  const { t } = useTranslation();
   const [recurringBookings, setRecurringBookings] = useState<RecurringBooking[]>([]);
   const [rooms, setRooms] = useState<Room[]>([]);
   const [semesters, setSemesters] = useState<Semester[]>([]);
@@ -96,7 +98,7 @@ export default function RecurringBookingsPage() {
       }
     } catch (error) {
       console.error('Error fetching data:', error);
-      toast.error('Failed to load data');
+      toast.error(t('errors.somethingWentWrong'));
     } finally {
       setIsLoading(false);
     }
@@ -129,7 +131,7 @@ export default function RecurringBookingsPage() {
       });
 
       if (res.ok) {
-        toast.success('Recurring booking created successfully');
+        toast.success(t('success.created'));
         setIsDialogOpen(false);
         setFormData({
           roomId: '',
@@ -162,10 +164,10 @@ export default function RecurringBookingsPage() {
       });
 
       if (res.ok) {
-        toast.success('Recurring booking deleted');
+        toast.success(t('success.deleted'));
         fetchData();
       } else {
-        toast.error('Failed to delete recurring booking');
+        toast.error(t('errors.somethingWentWrong'));
       }
     } catch (error) {
       console.error('Error deleting:', error);
@@ -185,11 +187,11 @@ export default function RecurringBookingsPage() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'APPROVED':
-        return <Badge className="bg-green-500">Approved</Badge>;
+        return <Badge className="bg-green-500">{t('booking.status.approved')}</Badge>;
       case 'PENDING':
-        return <Badge variant="secondary">Pending</Badge>;
+        return <Badge variant="secondary">{t('booking.status.pending')}</Badge>;
       case 'REJECTED':
-        return <Badge variant="destructive">Rejected</Badge>;
+        return <Badge variant="destructive">{t('booking.status.rejected')}</Badge>;
       default:
         return <Badge>{status}</Badge>;
     }

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { useTranslation } from '@/context/LanguageContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,6 +14,7 @@ import { toast } from 'sonner';
 
 export default function ProfilePage() {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [isEditing, setIsEditing] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
@@ -35,12 +37,12 @@ export default function ProfilePage() {
 
       if (formData.newPassword) {
         if (formData.newPassword !== formData.confirmPassword) {
-          toast.error('Passwords do not match');
+          toast.error(t('errors.passwordMismatch'));
           setIsSubmitting(false);
           return;
         }
         if (!formData.currentPassword) {
-          toast.error('Please enter your current password');
+          toast.error(t('errors.required'));
           setIsSubmitting(false);
           return;
         }
@@ -56,7 +58,7 @@ export default function ProfilePage() {
       });
 
       if (res.ok) {
-        toast.success('Profile updated successfully');
+        toast.success(t('success.updated'));
         setIsEditing(false);
         setFormData(prev => ({
           ...prev,
@@ -100,8 +102,7 @@ export default function ProfilePage() {
   return (
     <div className="space-y-6 max-w-2xl mx-auto">
       <div>
-        <h1 className="text-2xl font-bold">Profile</h1>
-        <p className="text-muted-foreground">Manage your account settings</p>
+        <h1 className="text-2xl font-bold">{t('profile.title')}</h1>
       </div>
 
       {/* Profile Info Card */}

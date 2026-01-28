@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslation } from '@/context/LanguageContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -22,6 +23,7 @@ interface Semester {
 }
 
 export default function SemestersPage() {
+  const { t } = useTranslation();
   const [semesters, setSemesters] = useState<Semester[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -98,7 +100,7 @@ export default function SemestersPage() {
       });
 
       if (res.ok) {
-        toast.success(editingSemester ? 'Semester updated successfully' : 'Semester created successfully');
+        toast.success(editingSemester ? t('success.updated') : t('success.created'));
         setIsDialogOpen(false);
         resetForm();
         fetchSemesters();
@@ -124,10 +126,10 @@ export default function SemestersPage() {
       });
 
       if (res.ok) {
-        toast.success('Semester deleted successfully');
+        toast.success(t('success.deleted'));
         fetchSemesters();
       } else {
-        toast.error('Failed to delete semester');
+        toast.error(t('errors.somethingWentWrong'));
       }
     } catch (error) {
       console.error('Error:', error);
@@ -173,8 +175,7 @@ export default function SemestersPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Semester Management</h1>
-          <p className="text-muted-foreground">Manage academic semesters for recurring bookings</p>
+          <h1 className="text-2xl font-bold">{t('admin.semesters.title')}</h1>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={(open) => { setIsDialogOpen(open); if (!open) resetForm(); }}>
           <DialogTrigger asChild>

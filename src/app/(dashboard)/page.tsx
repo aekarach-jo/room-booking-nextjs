@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
+import { useTranslation } from '@/context/LanguageContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -50,6 +51,7 @@ interface Announcement {
 
 export default function DashboardPage() {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [stats, setStats] = useState<Stats | null>(null);
   const [upcomingBookings, setUpcomingBookings] = useState<Booking[]>([]);
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
@@ -116,13 +118,13 @@ export default function DashboardPage() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'APPROVED':
-        return <Badge className="bg-green-500">Approved</Badge>;
+        return <Badge className="bg-green-500">{t('booking.status.approved')}</Badge>;
       case 'PENDING':
-        return <Badge variant="secondary">Pending</Badge>;
+        return <Badge variant="secondary">{t('booking.status.pending')}</Badge>;
       case 'REJECTED':
-        return <Badge variant="destructive">Rejected</Badge>;
+        return <Badge variant="destructive">{t('booking.status.rejected')}</Badge>;
       case 'CANCELLED':
-        return <Badge variant="outline">Cancelled</Badge>;
+        return <Badge variant="outline">{t('booking.status.cancelled')}</Badge>;
       default:
         return <Badge>{status}</Badge>;
     }
@@ -152,9 +154,9 @@ export default function DashboardPage() {
       {/* Welcome Section */}
       <div className="relative overflow-hidden rounded-2xl bg-linear-to-r from-primary to-primary/80 p-6 sm:p-8 text-primary-foreground shadow-lg">
         <div className="relative z-10">
-          <h1 className="text-2xl sm:text-3xl font-bold">Welcome back, {user?.fullName}</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold">{t('dashboard.welcome')}, {user?.fullName}</h1>
           <p className="mt-2 text-primary-foreground/80 max-w-lg">
-            Here&apos;s an overview of your room booking activities. Manage your bookings and explore available rooms.
+            {t('common.appName')}
           </p>
         </div>
         <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
@@ -166,50 +168,46 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <Card className="border-0 shadow-md hover:shadow-lg transition-shadow bg-linear-to-br from-card to-card/80">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Total Bookings</CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">{t('dashboard.todayBookings')}</CardTitle>
               <div className="p-2 rounded-xl bg-primary/10">
                 <CalendarDays className="h-4 w-4 text-primary" />
               </div>
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold">{stats.totalBookings}</div>
-              <p className="text-xs text-muted-foreground mt-1">All time bookings</p>
             </CardContent>
           </Card>
           <Card className="border-0 shadow-md hover:shadow-lg transition-shadow bg-linear-to-br from-card to-card/80">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Pending Approval</CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">{t('dashboard.pendingApproval')}</CardTitle>
               <div className="p-2 rounded-xl bg-yellow-500/10">
                 <Clock className="h-4 w-4 text-yellow-600" />
               </div>
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold">{stats.pendingBookings}</div>
-              <p className="text-xs text-muted-foreground mt-1">Awaiting review</p>
             </CardContent>
           </Card>
           <Card className="border-0 shadow-md hover:shadow-lg transition-shadow bg-linear-to-br from-card to-card/80">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Active Rooms</CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">{t('dashboard.totalRooms')}</CardTitle>
               <div className="p-2 rounded-xl bg-green-500/10">
                 <Building2 className="h-4 w-4 text-green-600" />
               </div>
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold">{stats.totalRooms}</div>
-              <p className="text-xs text-muted-foreground mt-1">Available for booking</p>
             </CardContent>
           </Card>
           <Card className="border-0 shadow-md hover:shadow-lg transition-shadow bg-linear-to-br from-card to-card/80">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Active Users</CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">{t('admin.users.title')}</CardTitle>
               <div className="p-2 rounded-xl bg-blue-500/10">
                 <Users className="h-4 w-4 text-blue-600" />
               </div>
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold">{stats.activeUsers}</div>
-              <p className="text-xs text-muted-foreground mt-1">Registered users</p>
             </CardContent>
           </Card>
         </div>
@@ -217,7 +215,7 @@ export default function DashboardPage() {
 
       {/* Quick Actions */}
       <div>
-        <h2 className="text-lg font-semibold mb-4">Quick Actions</h2>
+        <h2 className="text-lg font-semibold mb-4">{t('dashboard.quickActions')}</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <Link href="/bookings">
             <Card className="group hover:shadow-lg transition-all duration-300 cursor-pointer border-0 shadow-md hover:scale-[1.02]">
@@ -226,10 +224,10 @@ export default function DashboardPage() {
                   <div className="p-2.5 rounded-xl bg-primary/10 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
                     <CalendarDays className="h-5 w-5 text-primary group-hover:text-primary-foreground" />
                   </div>
-                  <span>Book a Room</span>
+                  <span>{t('navigation.bookRoom')}</span>
                 </CardTitle>
                 <CardDescription className="pl-12">
-                  Create a new room booking
+                  {t('booking.createBooking')}
                 </CardDescription>
               </CardHeader>
             </Card>
@@ -241,10 +239,10 @@ export default function DashboardPage() {
                   <div className="p-2.5 rounded-xl bg-primary/10 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
                     <Clock className="h-5 w-5 text-primary group-hover:text-primary-foreground" />
                   </div>
-                  <span>My Bookings</span>
+                  <span>{t('navigation.myBookings')}</span>
                 </CardTitle>
                 <CardDescription className="pl-12">
-                  View and manage your bookings
+                  {t('booking.myBookings')}
                 </CardDescription>
               </CardHeader>
             </Card>
@@ -256,10 +254,10 @@ export default function DashboardPage() {
                   <div className="p-2.5 rounded-xl bg-primary/10 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
                     <TrendingUp className="h-5 w-5 text-primary group-hover:text-primary-foreground" />
                   </div>
-                  <span>Calendar View</span>
+                  <span>{t('navigation.calendar')}</span>
                 </CardTitle>
                 <CardDescription className="pl-12">
-                  See all bookings on calendar
+                  {t('calendar.title')}
                 </CardDescription>
               </CardHeader>
             </Card>
@@ -272,12 +270,11 @@ export default function DashboardPage() {
         <Card className="border-0 shadow-md">
           <CardHeader className="flex flex-row items-center justify-between pb-4">
             <div>
-              <CardTitle className="text-lg">Upcoming Bookings</CardTitle>
-              <CardDescription>Your next scheduled bookings</CardDescription>
+              <CardTitle className="text-lg">{t('dashboard.upcomingBookings')}</CardTitle>
             </div>
             <Link href="/bookings/my?upcoming=true">
               <Button variant="ghost" size="sm" className="text-primary hover:text-primary hover:bg-primary/10">
-                View All <ArrowRight className="ml-1 h-4 w-4" />
+                {t('common.all')} <ArrowRight className="ml-1 h-4 w-4" />
               </Button>
             </Link>
           </CardHeader>
@@ -287,10 +284,10 @@ export default function DashboardPage() {
                 <div className="mx-auto w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-3">
                   <CalendarDays className="h-6 w-6 text-muted-foreground" />
                 </div>
-                <p className="text-muted-foreground">No upcoming bookings</p>
+                <p className="text-muted-foreground">{t('dashboard.noUpcomingBookings')}</p>
                 <Link href="/bookings">
                   <Button variant="outline" size="sm" className="mt-3">
-                    Book a Room
+                    {t('navigation.bookRoom')}
                   </Button>
                 </Link>
               </div>
@@ -319,12 +316,11 @@ export default function DashboardPage() {
         <Card className="border-0 shadow-md">
           <CardHeader className="flex flex-row items-center justify-between pb-4">
             <div>
-              <CardTitle className="text-lg">Announcements</CardTitle>
-              <CardDescription>Latest news and updates</CardDescription>
+              <CardTitle className="text-lg">{t('announcement.title')}</CardTitle>
             </div>
             <Link href="/announcements">
               <Button variant="ghost" size="sm" className="text-primary hover:text-primary hover:bg-primary/10">
-                View All <ArrowRight className="ml-1 h-4 w-4" />
+                {t('common.all')} <ArrowRight className="ml-1 h-4 w-4" />
               </Button>
             </Link>
           </CardHeader>
@@ -334,7 +330,7 @@ export default function DashboardPage() {
                 <div className="mx-auto w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-3">
                   <Building2 className="h-6 w-6 text-muted-foreground" />
                 </div>
-                <p className="text-muted-foreground">No announcements</p>
+                <p className="text-muted-foreground">{t('announcement.noAnnouncements')}</p>
               </div>
             ) : (
               <div className="space-y-3">

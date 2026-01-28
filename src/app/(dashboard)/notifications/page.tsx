@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslation } from '@/context/LanguageContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -17,6 +18,7 @@ interface Notification {
 }
 
 export default function NotificationsPage() {
+  const { t } = useTranslation();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -66,7 +68,7 @@ export default function NotificationsPage() {
 
       if (res.ok) {
         setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
-        toast.success('All notifications marked as read');
+        toast.success(t('success.updated'));
       }
     } catch (error) {
       console.error('Error:', error);
@@ -82,7 +84,7 @@ export default function NotificationsPage() {
 
       if (res.ok) {
         setNotifications(prev => prev.filter(n => n.id !== id));
-        toast.success('Notification deleted');
+        toast.success(t('success.deleted'));
       }
     } catch (error) {
       console.error('Error:', error);

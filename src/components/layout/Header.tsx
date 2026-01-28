@@ -3,7 +3,9 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/context/ThemeContext';
+import { useTranslation } from '@/context/LanguageContext';
 import { Button } from '@/components/ui/button';
+import { LanguageSwitcher } from '@/components/layout/LanguageSwitcher';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,6 +26,7 @@ interface HeaderProps {
 export function Header({ onMenuClick }: HeaderProps) {
   const { user, logout } = useAuth();
   const { theme, setTheme, resolvedTheme } = useTheme();
+  const { t } = useTranslation();
   const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
@@ -71,12 +74,15 @@ export function Header({ onMenuClick }: HeaderProps) {
             <Menu className="h-5 w-5" />
           </Button>
           <h1 className="text-lg font-semibold hidden sm:block text-foreground">
-            Room Booking System
+            {t('common.appName')}
           </h1>
         </div>
 
         {/* Right side */}
         <div className="flex items-center space-x-1">
+          {/* Language switcher */}
+          <LanguageSwitcher />
+
           {/* Theme toggle */}
           <Button variant="ghost" size="icon" onClick={toggleTheme} className="hover:bg-accent rounded-xl">
             {resolvedTheme === 'dark' ? (
@@ -126,13 +132,13 @@ export function Header({ onMenuClick }: HeaderProps) {
               <DropdownMenuItem asChild className="rounded-lg cursor-pointer">
                 <Link href="/profile" className="flex items-center">
                   <User className="mr-2 h-4 w-4" />
-                  Profile
+                  {t('navigation.profile')}
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild className="rounded-lg cursor-pointer">
                 <Link href="/settings" className="flex items-center">
                   <Settings className="mr-2 h-4 w-4" />
-                  Settings
+                  {t('navigation.settings')}
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
@@ -141,7 +147,7 @@ export function Header({ onMenuClick }: HeaderProps) {
                 onClick={() => logout()}
               >
                 <LogOut className="mr-2 h-4 w-4" />
-                Logout
+                {t('auth.logout')}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

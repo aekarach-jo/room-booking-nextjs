@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
+import { useTranslation } from '@/context/LanguageContext';
 import { cn } from '@/lib/utils';
 import {
   LayoutDashboard,
@@ -26,27 +27,28 @@ interface SidebarProps {
 }
 
 const userNavItems = [
-  { href: '/', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/bookings', label: 'Book a Room', icon: CalendarDays },
-  { href: '/bookings/my', label: 'My Bookings', icon: Clock },
-  { href: '/calendar', label: 'Calendar', icon: CalendarRange },
-  { href: '/history', label: 'History', icon: History },
-  { href: '/recurring', label: 'Recurring', icon: Repeat },
-  { href: '/announcements', label: 'Announcements', icon: Megaphone },
+  { href: '/', labelKey: 'navigation.dashboard', icon: LayoutDashboard },
+  { href: '/bookings', labelKey: 'navigation.bookRoom', icon: CalendarDays },
+  { href: '/bookings/my', labelKey: 'navigation.myBookings', icon: Clock },
+  { href: '/calendar', labelKey: 'navigation.calendar', icon: CalendarRange },
+  { href: '/history', labelKey: 'navigation.history', icon: History },
+  { href: '/recurring', labelKey: 'navigation.recurring', icon: Repeat },
+  { href: '/announcements', labelKey: 'navigation.announcements', icon: Megaphone },
 ];
 
 const adminNavItems = [
-  { href: '/admin/approval', label: 'Approval', icon: CheckCircle },
-  { href: '/admin/rooms', label: 'Rooms', icon: DoorOpen },
-  { href: '/admin/users', label: 'Users', icon: Users },
-  { href: '/admin/semesters', label: 'Semesters', icon: GraduationCap },
-  { href: '/admin/special-dates', label: 'Special Dates', icon: CalendarDays },
-  { href: '/admin/announcements', label: 'Announcements', icon: Megaphone },
+  { href: '/admin/approval', labelKey: 'navigation.approval', icon: CheckCircle },
+  { href: '/admin/rooms', labelKey: 'navigation.rooms', icon: DoorOpen },
+  { href: '/admin/users', labelKey: 'navigation.users', icon: Users },
+  { href: '/admin/semesters', labelKey: 'navigation.semesters', icon: GraduationCap },
+  { href: '/admin/special-dates', labelKey: 'navigation.specialDates', icon: CalendarDays },
+  { href: '/admin/announcements', labelKey: 'navigation.announcements', icon: Megaphone },
 ];
 
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
   const { user } = useAuth();
+  const { t } = useTranslation();
 
   const isAdmin = user?.role === 'STAFF' || user?.role === 'DEPARTMENT_HEAD';
 
@@ -106,7 +108,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                     )}
                   >
                     <Icon className={cn('h-5 w-5', isActive ? '' : 'opacity-70')} />
-                    <span>{item.label}</span>
+                    <span>{t(item.labelKey)}</span>
                   </Link>
                 );
               })}
@@ -117,7 +119,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
               <>
                 <div className="pt-5 pb-2">
                   <p className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                    Admin
+                    {t('navigation.admin')}
                   </p>
                 </div>
                 <div className="space-y-0.5">
@@ -137,7 +139,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                         )}
                       >
                         <Icon className={cn('h-5 w-5', isActive ? '' : 'opacity-70')} />
-                        <span>{item.label}</span>
+                        <span>{t(item.labelKey)}</span>
                       </Link>
                     );
                   })}

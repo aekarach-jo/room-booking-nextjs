@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslation } from '@/context/LanguageContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -30,6 +31,7 @@ const ROLES = [
 ];
 
 export default function UsersPage() {
+  const { t } = useTranslation();
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -133,7 +135,7 @@ export default function UsersPage() {
       });
 
       if (res.ok) {
-        toast.success(editingUser ? 'User updated successfully' : 'User created successfully');
+        toast.success(editingUser ? t('success.updated') : t('success.created'));
         setIsDialogOpen(false);
         resetForm();
         fetchUsers();
@@ -159,10 +161,10 @@ export default function UsersPage() {
       });
 
       if (res.ok) {
-        toast.success('User deleted successfully');
+        toast.success(t('success.deleted'));
         fetchUsers();
       } else {
-        toast.error('Failed to delete user');
+        toast.error(t('errors.somethingWentWrong'));
       }
     } catch (error) {
       console.error('Error:', error);
