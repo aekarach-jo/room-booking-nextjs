@@ -1,36 +1,150 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Room Booking System
 
-## Getting Started
+ระบบจองห้องเรียน/ห้องประชุม พัฒนาด้วย Next.js 16, Prisma และ PostgreSQL
 
-First, run the development server:
+## Tech Stack
+
+- **Framework:** Next.js 16 (App Router)
+- **Database:** PostgreSQL + Prisma ORM
+- **Authentication:** JWT (jose)
+- **UI:** Tailwind CSS, Radix UI, shadcn/ui
+- **Form:** React Hook Form + Zod
+
+## Prerequisites
+
+ก่อนเริ่มต้น ตรวจสอบว่าติดตั้งสิ่งเหล่านี้แล้ว:
+
+- [Node.js](https://nodejs.org/) v18 หรือใหม่กว่า
+- [PostgreSQL](https://www.postgresql.org/) v14 หรือใหม่กว่า
+- npm, yarn, pnpm หรือ bun
+
+## Installation
+
+### 1. Clone โปรเจค
+
+```bash
+git clone <repository-url>
+cd room-booking-nextjs
+```
+
+### 2. ติดตั้ง Dependencies
+
+```bash
+npm install
+# หรือ
+yarn install
+# หรือ
+pnpm install
+```
+
+### 3. ตั้งค่า Environment Variables
+
+สร้างไฟล์ `.env` ที่ root ของโปรเจค:
+
+```env
+# Database
+DATABASE_URL="postgresql://user:password@localhost:5432/classroom_booking"
+
+# JWT
+JWT_SECRET="your-secret-key-change-this-in-production"
+JWT_EXPIRES_IN="7d"
+
+# App
+NEXT_PUBLIC_APP_URL="http://localhost:3000"
+NODE_ENV="development"
+```
+
+> **หมายเหตุ:** แก้ไข `user`, `password` และชื่อ database ให้ตรงกับ PostgreSQL ของคุณ
+
+### 4. สร้าง Database
+
+สร้าง database ใน PostgreSQL:
+
+```sql
+CREATE DATABASE classroom_booking;
+```
+
+### 5. รัน Prisma Migration
+
+```bash
+# สร้าง Prisma Client
+npx prisma generate
+
+# รัน migration เพื่อสร้างตาราง
+npx prisma migrate dev --name init
+
+# (Optional) ดูข้อมูลใน database ผ่าน Prisma Studio
+npx prisma studio
+```
+
+## Running the Project
+
+### Development Mode
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+เปิด [http://localhost:3000](http://localhost:3000) ในเบราว์เซอร์
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Production Mode
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+# Build
+npm run build
+
+# Start
+npm start
+```
+
+### Other Commands
+
+```bash
+# Lint code
+npm run lint
+
+# Reset database และรัน migration ใหม่
+npx prisma migrate reset
+
+# อัปเดต Prisma Client หลังแก้ไข schema
+npx prisma generate
+```
+
+## Project Structure
+
+```
+room-booking-nextjs/
+├── prisma/
+│   └── schema.prisma    # Database schema
+├── src/
+│   ├── app/
+│   │   ├── (auth)/      # หน้า login, register
+│   │   ├── (dashboard)/ # หน้า dashboard
+│   │   └── api/         # API routes
+│   ├── components/      # React components
+│   ├── context/         # React context
+│   ├── lib/             # Utilities, helpers
+│   └── types/           # TypeScript types
+├── .env                 # Environment variables
+└── package.json
+```
+
+## Database Schema
+
+โปรเจคนี้มี models หลักดังนี้:
+
+- **User** - ผู้ใช้งาน (นักศึกษา, อาจารย์, เจ้าหน้าที่)
+- **Room** - ห้องเรียน/ห้องประชุม
+- **Booking** - การจองห้อง
+- **RecurringBooking** - การจองแบบประจำ
+- **Semester** - ภาคการศึกษา
+- **Notification** - การแจ้งเตือน
+- **Announcement** - ประกาศ
 
 ## Learn More
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- [Next.js Documentation](https://nextjs.org/docs)
+- [Prisma Documentation](https://www.prisma.io/docs)
+- [Tailwind CSS](https://tailwindcss.com/docs)
+- [shadcn/ui](https://ui.shadcn.com/)
+# room-booking-nextjs
