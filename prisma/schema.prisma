@@ -1,0 +1,224 @@
+// Prisma Schema for Room Booking System
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ==================== ENUMS ====================
+
+enum Role {
+  STUDENT
+  TEACHER
+  STAFF
+  DEPARTMENT_HEAD
+}
+
+enum RoomType {
+  LECTURE
+  COMPUTER_LAB
+  LABORATORY
+  MEETING
+  STUDY
+}
+
+enum BookingStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+enum RecurringPattern {
+  DAILY
+  WEEKLY
+  CUSTOM
+}
+
+enum SpecialDateType {
+  HOLIDAY
+  EXAM
+  EVENT
+}
+
+enum NotificationType {
+  BOOKING_APPROVED
+  BOOKING_REJECTED
+  BOOKING_REMINDER
+  BOOKING_CANCELLED
+  ROOM_MAINTENANCE
+  ANNOUNCEMENT
+}
+
+enum AnnouncementType {
+  INFO
+  WARNING
+  URGENT
+}
+
+// ==================== MODELS ====================
+
+model User {
+  id       String @id @default(cuid())
+  username String @unique
+  password String
+  fullName String
+
+  studentId  String?
+  teacherId  String?
+  department String?
+  year       Int?
+
+  role     Role    @default(STUDENT)
+  isActive Boolean @default(true)
+
+  noShowCount    Int       @default(0)
+  isSuspended    Boolean   @default(false)
+  suspendedUntil DateTime?
+
+  createdAt DateTime @default(now())
+
+  bookings          Booking[]
+  recurringBookings RecurringBooking[]
+  notifications     Notification[]
+  announcements     Announcement[]
+}
+
+model Room {
+  id          String   @id @default(cuid())
+  name        String
+  type        RoomType @default(LECTURE)
+  floor       Int?
+  building    String?
+  capacity    Int
+  equipment   Json?
+  description String?
+
+  openTime  String? @default("08:00")
+  closeTime String? @default("20:00")
+  isActive  Boolean @default(true)
+
+  maxBookingHours    Int?    @default(3)
+  advanceBookingDays Int?    @default(7)
+  requireApproval    Boolean @default(true)
+
+  bookings          Booking[]
+  recurringBookings RecurringBooking[]
+  maintenances      RoomMaintenance[]
+}
+
+model Booking {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+  roomId String
+  room   Room   @relation(fields: [roomId], references: [id])
+
+  date      DateTime
+  startTime DateTime
+  endTime   DateTime
+  purpose   String
+  attendees Int
+
+  status    BookingStatus @default(PENDING)
+  adminNote String?
+
+  checkInTime  DateTime?
+  checkOutTime DateTime?
+  isNoShow     Boolean   @default(false)
+
+  recurringBookingId String?
+  recurringBooking   RecurringBooking? @relation(fields: [recurringBookingId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model RecurringBooking {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+  roomId String
+  room   Room   @relation(fields: [roomId], references: [id])
+
+  semesterId String?
+  semester   Semester? @relation(fields: [semesterId], references: [id])
+
+  startDate DateTime
+  endDate   DateTime?
+
+  pattern    RecurringPattern
+  daysOfWeek Json?
+
+  startTime String
+  endTime   String
+  purpose   String
+
+  status BookingStatus @default(PENDING)
+
+  createdAt DateTime @default(now())
+
+  bookings Booking[]
+}
+
+model RoomMaintenance {
+  id        String   @id @default(cuid())
+  roomId    String
+  room      Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  startDate DateTime
+  endDate   DateTime
+  reason    String
+  createdAt DateTime @default(now())
+}
+
+model Semester {
+  id           String        @id @default(cuid())
+  name         String
+  startDate    DateTime
+  endDate      DateTime
+  isActive     Boolean       @default(false)
+  createdAt    DateTime      @default(now())
+  specialDates SpecialDate[]
+  recurringBookings RecurringBooking[]
+}
+
+model SpecialDate {
+  id          String          @id @default(cuid())
+  name        String
+  date        DateTime
+  type        SpecialDateType
+  description String?
+  semesterId  String?
+  semester    Semester?       @relation(fields: [semesterId], references: [id])
+}
+
+model Notification {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  type    NotificationType
+  title   String
+  message String
+
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Announcement {
+  id          String           @id @default(cuid())
+  title       String
+  content     String
+  type        AnnouncementType @default(INFO)
+  isPinned    Boolean          @default(false)
+  publishDate DateTime         @default(now())
+  expiryDate  DateTime?
+  createdBy   String
+  creator     User             @relation(fields: [createdBy], references: [id])
+  createdAt   DateTime         @default(now())
+}

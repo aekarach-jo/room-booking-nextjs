@@ -1,0 +1,290 @@
+'use client';
+
+import { useState } from 'react';
+import { useAuth } from '@/context/AuthContext';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import { User, Mail, Building, GraduationCap, Shield, Calendar, AlertTriangle } from 'lucide-react';
+import { toast } from 'sonner';
+
+export default function ProfilePage() {
+  const { user } = useAuth();
+  const [isEditing, setIsEditing] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
+    fullName: user?.fullName || '',
+    department: user?.department || '',
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+  });
+
+  const handleUpdateProfile = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      const payload: Record<string, string> = {
+        fullName: formData.fullName,
+        department: formData.department,
+      };
+
+      if (formData.newPassword) {
+        if (formData.newPassword !== formData.confirmPassword) {
+          toast.error('Passwords do not match');
+          setIsSubmitting(false);
+          return;
+        }
+        if (!formData.currentPassword) {
+          toast.error('Please enter your current password');
+          setIsSubmitting(false);
+          return;
+        }
+        payload.currentPassword = formData.currentPassword;
+        payload.newPassword = formData.newPassword;
+      }
+
+      const res = await fetch(`/api/users/${user?.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(payload),
+      });
+
+      if (res.ok) {
+        toast.success('Profile updated successfully');
+        setIsEditing(false);
+        setFormData(prev => ({
+          ...prev,
+          currentPassword: '',
+          newPassword: '',
+          confirmPassword: '',
+        }));
+      } else {
+        const error = await res.json();
+        toast.error(error.error || 'Failed to update profile');
+      }
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      toast.error('An error occurred');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const getRoleBadge = (role: string) => {
+    switch (role) {
+      case 'DEPARTMENT_HEAD':
+        return <Badge className="bg-purple-500">Department Head</Badge>;
+      case 'STAFF':
+        return <Badge className="bg-blue-500">Staff</Badge>;
+      case 'TEACHER':
+        return <Badge className="bg-green-500">Teacher</Badge>;
+      default:
+        return <Badge variant="secondary">Student</Badge>;
+    }
+  };
+
+  if (!user) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6 max-w-2xl mx-auto">
+      <div>
+        <h1 className="text-2xl font-bold">Profile</h1>
+        <p className="text-muted-foreground">Manage your account settings</p>
+      </div>
+
+      {/* Profile Info Card */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+                <span className="text-2xl font-bold text-primary">
+                  {user.fullName.charAt(0).toUpperCase()}
+                </span>
+              </div>
+              <div>
+                <CardTitle>{user.fullName}</CardTitle>
+                <CardDescription>@{user.username}</CardDescription>
+              </div>
+            </div>
+            {getRoleBadge(user.role)}
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-4">
+            <div className="flex items-center gap-3">
+              <User className="h-5 w-5 text-muted-foreground" />
+              <div>
+                <p className="text-sm font-medium">Username</p>
+                <p className="text-sm text-muted-foreground">{user.username}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <Building className="h-5 w-5 text-muted-foreground" />
+              <div>
+                <p className="text-sm font-medium">Department</p>
+                <p className="text-sm text-muted-foreground">{user.department || 'Not specified'}</p>
+              </div>
+            </div>
+            {user.studentId && (
+              <div className="flex items-center gap-3">
+                <GraduationCap className="h-5 w-5 text-muted-foreground" />
+                <div>
+                  <p className="text-sm font-medium">Student ID</p>
+                  <p className="text-sm text-muted-foreground">{user.studentId}</p>
+                </div>
+              </div>
+            )}
+            {user.teacherId && (
+              <div className="flex items-center gap-3">
+                <Shield className="h-5 w-5 text-muted-foreground" />
+                <div>
+                  <p className="text-sm font-medium">Teacher ID</p>
+                  <p className="text-sm text-muted-foreground">{user.teacherId}</p>
+                </div>
+              </div>
+            )}
+            <div className="flex items-center gap-3">
+              <Calendar className="h-5 w-5 text-muted-foreground" />
+              <div>
+                <p className="text-sm font-medium">Member since</p>
+                <p className="text-sm text-muted-foreground">
+                  {new Date(user.createdAt).toLocaleDateString('th-TH', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric',
+                  })}
+                </p>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Warning if suspended */}
+      {user.isSuspended && (
+        <Card className="border-destructive">
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-3 text-destructive">
+              <AlertTriangle className="h-5 w-5" />
+              <div>
+                <p className="font-medium">Account Suspended</p>
+                <p className="text-sm">
+                  Your account has been suspended due to repeated no-shows.
+                  {user.suspendedUntil && (
+                    <> Suspension ends on {new Date(user.suspendedUntil).toLocaleDateString('th-TH')}.</>
+                  )}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Edit Profile Form */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>Edit Profile</CardTitle>
+              <CardDescription>Update your profile information</CardDescription>
+            </div>
+            {!isEditing && (
+              <Button variant="outline" onClick={() => setIsEditing(true)}>
+                Edit
+              </Button>
+            )}
+          </div>
+        </CardHeader>
+        {isEditing && (
+          <CardContent>
+            <form onSubmit={handleUpdateProfile} className="space-y-4">
+              <div className="space-y-2">
+                <Label>Full Name</Label>
+                <Input
+                  value={formData.fullName}
+                  onChange={(e) => setFormData(prev => ({ ...prev, fullName: e.target.value }))}
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Department</Label>
+                <Input
+                  value={formData.department}
+                  onChange={(e) => setFormData(prev => ({ ...prev, department: e.target.value }))}
+                />
+              </div>
+
+              <Separator className="my-4" />
+
+              <div>
+                <h3 className="text-sm font-medium mb-4">Change Password (Optional)</h3>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label>Current Password</Label>
+                    <Input
+                      type="password"
+                      value={formData.currentPassword}
+                      onChange={(e) => setFormData(prev => ({ ...prev, currentPassword: e.target.value }))}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>New Password</Label>
+                    <Input
+                      type="password"
+                      value={formData.newPassword}
+                      onChange={(e) => setFormData(prev => ({ ...prev, newPassword: e.target.value }))}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Confirm New Password</Label>
+                    <Input
+                      type="password"
+                      value={formData.confirmPassword}
+                      onChange={(e) => setFormData(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    setIsEditing(false);
+                    setFormData({
+                      fullName: user?.fullName || '',
+                      department: user?.department || '',
+                      currentPassword: '',
+                      newPassword: '',
+                      confirmPassword: '',
+                    });
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={isSubmitting}>
+                  {isSubmitting ? 'Saving...' : 'Save Changes'}
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        )}
+      </Card>
+    </div>
+  );
+}
