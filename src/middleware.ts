@@ -33,8 +33,12 @@ export async function middleware(request: NextRequest) {
 
   // Check if it's an API route
   if (pathname.startsWith('/api/')) {
-    // Allow auth routes without token
-    if (pathname.startsWith('/api/auth/login') || pathname.startsWith('/api/auth/register')) {
+    // Allow auth routes without token (login, register, RMUTI SSO)
+    if (
+      pathname.startsWith('/api/auth/login') || 
+      pathname.startsWith('/api/auth/register') ||
+      pathname.startsWith('/api/auth/rmuti')
+    ) {
       return NextResponse.next();
     }
 

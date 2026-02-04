@@ -18,13 +18,25 @@ export interface AuthUser {
   id: string;
   username: string;
   fullName: string;
+  fullNameEn?: string | null;
+  email?: string | null;
   role: string;
   studentId?: string | null;
   teacherId?: string | null;
   department?: string | null;
+  faculty?: string | null;
+  program?: string | null;
+  degreeLevel?: string | null;
+  campus?: string | null;
+  phone?: string | null;
+  avatar?: string | null;
   year?: number | null;
   isActive: boolean;
   isSuspended: boolean;
+  suspendedUntil?: Date | null;
+  lastLoginAt?: Date | null;
+  loginCount?: number;
+  createdAt?: Date;
 }
 
 // Password utilities
@@ -79,13 +91,25 @@ export async function verifyAuth(request: NextRequest): Promise<AuthUser | null>
       id: true,
       username: true,
       fullName: true,
+      fullNameEn: true,
+      email: true,
       role: true,
       studentId: true,
       teacherId: true,
       department: true,
+      faculty: true,
+      program: true,
+      degreeLevel: true,
+      campus: true,
+      phone: true,
+      avatar: true,
       year: true,
       isActive: true,
       isSuspended: true,
+      suspendedUntil: true,
+      lastLoginAt: true,
+      loginCount: true,
+      createdAt: true,
     },
   });
 

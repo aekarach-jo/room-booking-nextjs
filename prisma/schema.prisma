@@ -75,7 +75,19 @@ model User {
   year       Int?
 
   // RMUTI SSO Integration
-  rmutiId String? @unique // RMUTI User ID from SSO
+  rmutiId     String? @unique // RMUTI User ID from SSO
+  email       String?         // อีเมล @rmuti.ac.th
+  fullNameEn  String?         // ชื่อ-สกุล ภาษาอังกฤษ
+  faculty     String?         // คณะ
+  program     String?         // หลักสูตร/สาขา
+  degreeLevel String?         // ระดับการศึกษา (ปริญญาตรี, โท, เอก)
+  campus      String?         // วิทยาเขต
+  phone       String?         // เบอร์โทรศัพท์
+  avatar      String?         // รูปโปรไฟล์ URL
+
+  // Analytics
+  lastLoginAt DateTime?       // เข้าสู่ระบบล่าสุด
+  loginCount  Int       @default(0)
 
   role     Role    @default(STUDENT)
   isActive Boolean @default(true)
@@ -85,6 +97,7 @@ model User {
   suspendedUntil DateTime?
 
   createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 
   bookings          Booking[]
   recurringBookings RecurringBooking[]

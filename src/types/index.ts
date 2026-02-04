@@ -47,13 +47,25 @@ export interface UserResponse {
   id: string;
   username: string;
   fullName: string;
+  fullNameEn?: string | null;
+  email?: string | null;
   role: string;
   studentId?: string | null;
   teacherId?: string | null;
   department?: string | null;
+  faculty?: string | null;
+  program?: string | null;
+  degreeLevel?: string | null;
+  campus?: string | null;
+  phone?: string | null;
+  avatar?: string | null;
   year?: number | null;
   isActive: boolean;
   isSuspended: boolean;
+  suspendedUntil?: Date | string | null;
+  lastLoginAt?: Date | string | null;
+  loginCount?: number;
+  createdAt?: Date | string;
 }
 
 // Booking with relations

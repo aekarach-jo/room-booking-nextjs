@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { User, Mail, Building, GraduationCap, Shield, Calendar, AlertTriangle } from 'lucide-react';
+import { User, Mail, Building, GraduationCap, Shield, Calendar, AlertTriangle, Phone, MapPin, BookOpen, Award } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function ProfilePage() {
@@ -110,13 +110,24 @@ export default function ProfilePage() {
         <CardHeader>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
-                <span className="text-2xl font-bold text-primary">
-                  {user.fullName.charAt(0).toUpperCase()}
-                </span>
-              </div>
+              {user.avatar ? (
+                <img 
+                  src={user.avatar} 
+                  alt={user.fullName}
+                  className="w-16 h-16 rounded-full object-cover"
+                />
+              ) : (
+                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+                  <span className="text-2xl font-bold text-primary">
+                    {user.fullName.charAt(0).toUpperCase()}
+                  </span>
+                </div>
+              )}
               <div>
                 <CardTitle>{user.fullName}</CardTitle>
+                {user.fullNameEn && (
+                  <p className="text-sm text-muted-foreground">{user.fullNameEn}</p>
+                )}
                 <CardDescription>@{user.username}</CardDescription>
               </div>
             </div>
@@ -125,25 +136,12 @@ export default function ProfilePage() {
         </CardHeader>
         <CardContent>
           <div className="grid gap-4">
-            <div className="flex items-center gap-3">
-              <User className="h-5 w-5 text-muted-foreground" />
-              <div>
-                <p className="text-sm font-medium">Username</p>
-                <p className="text-sm text-muted-foreground">{user.username}</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <Building className="h-5 w-5 text-muted-foreground" />
-              <div>
-                <p className="text-sm font-medium">Department</p>
-                <p className="text-sm text-muted-foreground">{user.department || 'Not specified'}</p>
-              </div>
-            </div>
+            {/* Student/Teacher ID */}
             {user.studentId && (
               <div className="flex items-center gap-3">
                 <GraduationCap className="h-5 w-5 text-muted-foreground" />
                 <div>
-                  <p className="text-sm font-medium">Student ID</p>
+                  <p className="text-sm font-medium">{t('profile.studentId')}</p>
                   <p className="text-sm text-muted-foreground">{user.studentId}</p>
                 </div>
               </div>
@@ -152,24 +150,126 @@ export default function ProfilePage() {
               <div className="flex items-center gap-3">
                 <Shield className="h-5 w-5 text-muted-foreground" />
                 <div>
-                  <p className="text-sm font-medium">Teacher ID</p>
+                  <p className="text-sm font-medium">{t('profile.teacherId')}</p>
                   <p className="text-sm text-muted-foreground">{user.teacherId}</p>
                 </div>
               </div>
             )}
+
+            {/* Email */}
+            {user.email && (
+              <div className="flex items-center gap-3">
+                <Mail className="h-5 w-5 text-muted-foreground" />
+                <div>
+                  <p className="text-sm font-medium">{t('profile.email')}</p>
+                  <p className="text-sm text-muted-foreground">{user.email}</p>
+                </div>
+              </div>
+            )}
+
+            {/* Phone */}
+            {user.phone && (
+              <div className="flex items-center gap-3">
+                <Phone className="h-5 w-5 text-muted-foreground" />
+                <div>
+                  <p className="text-sm font-medium">{t('profile.phone')}</p>
+                  <p className="text-sm text-muted-foreground">{user.phone}</p>
+                </div>
+              </div>
+            )}
+
+            <Separator />
+
+            {/* Faculty */}
+            {user.faculty && (
+              <div className="flex items-center gap-3">
+                <Building className="h-5 w-5 text-muted-foreground" />
+                <div>
+                  <p className="text-sm font-medium">{t('profile.faculty')}</p>
+                  <p className="text-sm text-muted-foreground">{user.faculty}</p>
+                </div>
+              </div>
+            )}
+
+            {/* Department/Program */}
+            {(user.department || user.program) && (
+              <div className="flex items-center gap-3">
+                <BookOpen className="h-5 w-5 text-muted-foreground" />
+                <div>
+                  <p className="text-sm font-medium">{t('profile.program')}</p>
+                  <p className="text-sm text-muted-foreground">{user.program || user.department}</p>
+                </div>
+              </div>
+            )}
+
+            {/* Degree Level */}
+            {user.degreeLevel && (
+              <div className="flex items-center gap-3">
+                <Award className="h-5 w-5 text-muted-foreground" />
+                <div>
+                  <p className="text-sm font-medium">{t('profile.degreeLevel')}</p>
+                  <p className="text-sm text-muted-foreground">{user.degreeLevel}</p>
+                </div>
+              </div>
+            )}
+
+            {/* Year */}
+            {user.year && (
+              <div className="flex items-center gap-3">
+                <GraduationCap className="h-5 w-5 text-muted-foreground" />
+                <div>
+                  <p className="text-sm font-medium">{t('profile.year')}</p>
+                  <p className="text-sm text-muted-foreground">{t('profile.yearValue', { year: user.year })}</p>
+                </div>
+              </div>
+            )}
+
+            {/* Campus */}
+            {user.campus && (
+              <div className="flex items-center gap-3">
+                <MapPin className="h-5 w-5 text-muted-foreground" />
+                <div>
+                  <p className="text-sm font-medium">{t('profile.campus')}</p>
+                  <p className="text-sm text-muted-foreground">{user.campus}</p>
+                </div>
+              </div>
+            )}
+
+            <Separator />
+
+            {/* Member since */}
             <div className="flex items-center gap-3">
               <Calendar className="h-5 w-5 text-muted-foreground" />
               <div>
-                <p className="text-sm font-medium">Member since</p>
+                <p className="text-sm font-medium">{t('profile.memberSince')}</p>
                 <p className="text-sm text-muted-foreground">
-                  {new Date(user.createdAt).toLocaleDateString('th-TH', {
+                  {user.createdAt ? new Date(user.createdAt).toLocaleDateString('th-TH', {
                     day: 'numeric',
                     month: 'long',
                     year: 'numeric',
-                  })}
+                  }) : '-'}
                 </p>
               </div>
             </div>
+
+            {/* Last Login */}
+            {user.lastLoginAt && (
+              <div className="flex items-center gap-3">
+                <User className="h-5 w-5 text-muted-foreground" />
+                <div>
+                  <p className="text-sm font-medium">{t('profile.lastLogin')}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {new Date(user.lastLoginAt).toLocaleDateString('th-TH', {
+                      day: 'numeric',
+                      month: 'long',
+                      year: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
