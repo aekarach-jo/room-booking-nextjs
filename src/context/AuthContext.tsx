@@ -12,6 +12,22 @@ interface User {
   teacherId?: string | null;
   department?: string | null;
   year?: number | null;
+
+  // RMUTI SSO Integration
+  rmutiId?: string | null;
+  email?: string | null;
+  fullNameEn?: string | null;
+  faculty?: string | null;
+  program?: string | null;
+  degreeLevel?: string | null;
+  campus?: string | null;
+  phone?: string | null;
+  avatar?: string | null;
+
+  // Analytics
+  lastLoginAt?: string | null;
+  loginCount?: number;
+
   isActive: boolean;
   isSuspended: boolean;
   suspendedUntil?: string | null;
