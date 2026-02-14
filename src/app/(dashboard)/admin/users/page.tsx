@@ -24,11 +24,7 @@ interface User {
   createdAt: string;
 }
 
-const ROLES = [
-  { value: 'USER', label: 'User' },
-  { value: 'STAFF', label: 'Staff' },
-  { value: 'DEPARTMENT_HEAD', label: 'Department Head' },
-];
+const ROLE_VALUES = ['STUDENT', 'TEACHER', 'STAFF', 'DEPARTMENT_HEAD'];
 
 export default function UsersPage() {
   const { t } = useTranslation();
@@ -46,7 +42,7 @@ export default function UsersPage() {
     email: '',
     fullName: '',
     department: '',
-    role: 'USER',
+    role: 'STUDENT',
     password: '',
     isActive: true,
   });
@@ -88,7 +84,7 @@ export default function UsersPage() {
       email: '',
       fullName: '',
       department: '',
-      role: 'USER',
+      role: 'STUDENT',
       password: '',
       isActive: true,
     });
@@ -184,7 +180,7 @@ export default function UsersPage() {
       });
 
       if (res.ok) {
-        toast.success(`User ${user.isActive ? 'deactivated' : 'activated'}`);
+        toast.success(t('success.updated'));
         fetchUsers();
       }
     } catch (error) {
@@ -195,11 +191,13 @@ export default function UsersPage() {
   const getRoleBadge = (role: string) => {
     switch (role) {
       case 'DEPARTMENT_HEAD':
-        return <Badge className="bg-purple-500">Head</Badge>;
+        return <Badge className="bg-purple-500">{t('admin.users.roles.DEPARTMENT_HEAD')}</Badge>;
       case 'STAFF':
-        return <Badge className="bg-blue-500">Staff</Badge>;
+        return <Badge className="bg-blue-500">{t('admin.users.roles.STAFF')}</Badge>;
+      case 'TEACHER':
+        return <Badge className="bg-green-600">{t('admin.users.roles.TEACHER')}</Badge>;
       default:
-        return <Badge variant="secondary">User</Badge>;
+        return <Badge variant="secondary">{t('admin.users.roles.STUDENT')}</Badge>;
     }
   };
 
@@ -215,26 +213,26 @@ export default function UsersPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">User Management</h1>
-          <p className="text-muted-foreground">Manage system users and their roles</p>
+          <h1 className="text-2xl font-bold">{t('admin.users.title')}</h1>
+          <p className="text-muted-foreground">{t('admin.users.subtitle')}</p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={(open) => { setIsDialogOpen(open); if (!open) resetForm(); }}>
           <DialogTrigger asChild>
             <Button>
               <Plus className="h-4 w-4 mr-2" />
-              Add User
+              {t('admin.users.addUser')}
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-md">
             <DialogHeader>
-              <DialogTitle>{editingUser ? 'Edit User' : 'Add New User'}</DialogTitle>
+              <DialogTitle>{editingUser ? t('admin.users.editUser') : t('admin.users.addNewUser')}</DialogTitle>
               <DialogDescription>
-                {editingUser ? 'Update user information' : 'Create a new user account'}
+                {editingUser ? t('admin.users.updateUserInfo') : t('admin.users.createNewUser')}
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label>Email *</Label>
+                <Label>{t('admin.users.email')} *</Label>
                 <Input
                   type="email"
                   value={formData.email}
@@ -245,7 +243,7 @@ export default function UsersPage() {
               </div>
 
               <div className="space-y-2">
-                <Label>Full Name *</Label>
+                <Label>{t('admin.users.fullName')} *</Label>
                 <Input
                   value={formData.fullName}
                   onChange={(e) => setFormData(prev => ({ ...prev, fullName: e.target.value }))}
@@ -255,7 +253,7 @@ export default function UsersPage() {
               </div>
 
               <div className="space-y-2">
-                <Label>Department *</Label>
+                <Label>{t('admin.users.department')} *</Label>
                 <Input
                   value={formData.department}
                   onChange={(e) => setFormData(prev => ({ ...prev, department: e.target.value }))}
@@ -265,7 +263,7 @@ export default function UsersPage() {
               </div>
 
               <div className="space-y-2">
-                <Label>Role</Label>
+                <Label>{t('admin.users.role')}</Label>
                 <Select
                   value={formData.role}
                   onValueChange={(value) => setFormData(prev => ({ ...prev, role: value }))}
@@ -274,9 +272,9 @@ export default function UsersPage() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {ROLES.map((role) => (
-                      <SelectItem key={role.value} value={role.value}>
-                        {role.label}
+                    {ROLE_VALUES.map((value) => (
+                      <SelectItem key={value} value={value}>
+                        {t(`admin.users.roles.${value}`)}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -284,7 +282,7 @@ export default function UsersPage() {
               </div>
 
               <div className="space-y-2">
-                <Label>{editingUser ? 'New Password (leave blank to keep current)' : 'Password *'}</Label>
+                <Label>{editingUser ? t('admin.users.newPassword') : `${t('admin.users.password')} *`}</Label>
                 <Input
                   type="password"
                   value={formData.password}
@@ -301,15 +299,15 @@ export default function UsersPage() {
                   checked={formData.isActive}
                   onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isActive: checked }))}
                 />
-                <Label htmlFor="userIsActive">Active</Label>
+                <Label htmlFor="userIsActive">{t('admin.users.active')}</Label>
               </div>
 
               <DialogFooter>
                 <Button type="button" variant="outline" onClick={() => { setIsDialogOpen(false); resetForm(); }}>
-                  Cancel
+                  {t('common.cancel')}
                 </Button>
                 <Button type="submit" disabled={isSubmitting}>
-                  {isSubmitting ? 'Saving...' : editingUser ? 'Update' : 'Create'}
+                  {isSubmitting ? t('common.loading') : editingUser ? t('common.save') : t('common.create')}
                 </Button>
               </DialogFooter>
             </form>
@@ -324,13 +322,13 @@ export default function UsersPage() {
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search by name or email..."
+                placeholder={t('admin.users.searchPlaceholder')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
               />
             </div>
-            <Button type="submit">Search</Button>
+            <Button type="submit">{t('common.search')}</Button>
           </form>
         </CardContent>
       </Card>
@@ -340,18 +338,18 @@ export default function UsersPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>User</TableHead>
-                <TableHead>Department</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>{t('navigation.users')}</TableHead>
+                <TableHead>{t('admin.users.department')}</TableHead>
+                <TableHead>{t('admin.users.role')}</TableHead>
+                <TableHead>{t('common.status')}</TableHead>
+                <TableHead className="text-right">{t('common.actions')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {users.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
-                    No users found
+                    {t('admin.users.noUsersFound')}
                   </TableCell>
                 </TableRow>
               ) : (
@@ -400,7 +398,7 @@ export default function UsersPage() {
       {/* Pagination */}
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted-foreground">
-          Page {page} of {totalPages}
+          {t('admin.users.pageOf').replace('{page}', page.toString()).replace('{total}', totalPages.toString())}
         </p>
         <div className="flex gap-2">
           <Button
@@ -410,7 +408,7 @@ export default function UsersPage() {
             disabled={page === 1}
           >
             <ChevronLeft className="h-4 w-4" />
-            Previous
+            {t('common.previous')}
           </Button>
           <Button
             variant="outline"
@@ -418,7 +416,7 @@ export default function UsersPage() {
             onClick={() => setPage(p => Math.min(totalPages, p + 1))}
             disabled={page === totalPages}
           >
-            Next
+            {t('common.next')}
             <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
@@ -426,17 +424,17 @@ export default function UsersPage() {
       <Dialog open={!!deleteId} onOpenChange={(open) => { if (!open) setDeleteId(null); }}>
         <DialogContent className="max-w-sm">
           <DialogHeader>
-            <DialogTitle>ยืนยันการลบ</DialogTitle>
+            <DialogTitle>{t('admin.users.confirmDelete')}</DialogTitle>
             <DialogDescription>
-              คุณแน่ใจหรือไม่ว่าต้องการลบผู้ใช้งานนี้? การกระทำนี้ไม่สามารถย้อนกลับได้
+              {t('admin.users.confirmDeleteDesc')}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleteId(null)}>
-              Cancel
+              {t('common.cancel')}
             </Button>
             <Button variant="destructive" onClick={handleDelete}>
-              Delete
+              {t('common.delete')}
             </Button>
           </DialogFooter>
         </DialogContent>

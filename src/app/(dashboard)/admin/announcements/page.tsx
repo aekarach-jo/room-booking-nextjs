@@ -29,11 +29,7 @@ interface Announcement {
   createdAt: string;
 }
 
-const ANNOUNCEMENT_TYPES = [
-  { value: 'INFO', label: 'Info' },
-  { value: 'WARNING', label: 'Warning' },
-  { value: 'URGENT', label: 'Urgent' },
-];
+const ANNOUNCEMENT_TYPE_VALUES = ['INFO', 'WARNING', 'URGENT'];
 
 export default function AnnouncementsPage() {
   const { t } = useTranslation();
@@ -170,7 +166,7 @@ export default function AnnouncementsPage() {
       });
 
       if (res.ok) {
-        toast.success(announcement.isPinned ? 'Announcement unpinned' : 'Announcement pinned');
+        toast.success(announcement.isPinned ? t('announcement.unpinned') : t('announcement.pinned'));
         fetchAnnouncements();
       }
     } catch (error) {
@@ -191,11 +187,11 @@ export default function AnnouncementsPage() {
   const getTypeBadge = (type: string) => {
     switch (type) {
       case 'URGENT':
-        return <Badge variant="destructive">Urgent</Badge>;
+        return <Badge variant="destructive">{t('announcement.types.URGENT')}</Badge>;
       case 'WARNING':
-        return <Badge className="bg-yellow-500">Warning</Badge>;
+        return <Badge className="bg-yellow-500">{t('announcement.types.WARNING')}</Badge>;
       default:
-        return <Badge variant="secondary">Info</Badge>;
+        return <Badge variant="secondary">{t('announcement.types.INFO')}</Badge>;
     }
   };
 
@@ -211,26 +207,26 @@ export default function AnnouncementsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Announcements Management</h1>
-          <p className="text-muted-foreground">Create and manage system announcements</p>
+          <h1 className="text-2xl font-bold">{t('announcement.management')}</h1>
+          <p className="text-muted-foreground">{t('announcement.subtitle')}</p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={(open) => { setIsDialogOpen(open); if (!open) resetForm(); }}>
           <DialogTrigger asChild>
             <Button>
               <Plus className="h-4 w-4 mr-2" />
-              New Announcement
+              {t('announcement.newAnnouncement')}
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-lg">
             <DialogHeader>
-              <DialogTitle>{editingAnnouncement ? 'Edit Announcement' : 'Create Announcement'}</DialogTitle>
+              <DialogTitle>{editingAnnouncement ? t('announcement.editAnnouncement') : t('announcement.createAnnouncement')}</DialogTitle>
               <DialogDescription>
-                {editingAnnouncement ? 'Update announcement details' : 'Create a new announcement for all users'}
+                {editingAnnouncement ? t('announcement.updateAnnouncementDetails') : t('announcement.createNewAnnouncement')}
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label>Title *</Label>
+                <Label>{t('announcement.announcementTitle')} *</Label>
                 <Input
                   value={formData.title}
                   onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
@@ -240,7 +236,7 @@ export default function AnnouncementsPage() {
               </div>
 
               <div className="space-y-2">
-                <Label>Content *</Label>
+                <Label>{t('announcement.content')} *</Label>
                 <Textarea
                   value={formData.content}
                   onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
@@ -252,7 +248,7 @@ export default function AnnouncementsPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Type</Label>
+                  <Label>{t('announcement.type')}</Label>
                   <Select
                     value={formData.type}
                     onValueChange={(value) => setFormData(prev => ({ ...prev, type: value }))}
@@ -261,9 +257,9 @@ export default function AnnouncementsPage() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {ANNOUNCEMENT_TYPES.map((type) => (
-                        <SelectItem key={type.value} value={type.value}>
-                          {type.label}
+                      {ANNOUNCEMENT_TYPE_VALUES.map((value) => (
+                        <SelectItem key={value} value={value}>
+                          {t(`announcement.types.${value}`)}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -276,14 +272,14 @@ export default function AnnouncementsPage() {
                       checked={formData.isPinned}
                       onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isPinned: checked }))}
                     />
-                    <Label htmlFor="isPinned">Pin announcement</Label>
+                    <Label htmlFor="isPinned">{t('announcement.pinAnnouncement')}</Label>
                   </div>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Publish Date *</Label>
+                  <Label>{t('announcement.publishDate')} *</Label>
                   <Input
                     type="datetime-local"
                     value={formData.publishDate}
@@ -292,7 +288,7 @@ export default function AnnouncementsPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Expiry Date</Label>
+                  <Label>{t('announcement.expiryDate')}</Label>
                   <Input
                     type="datetime-local"
                     value={formData.expiryDate}
@@ -303,10 +299,10 @@ export default function AnnouncementsPage() {
 
               <DialogFooter>
                 <Button type="button" variant="outline" onClick={() => { setIsDialogOpen(false); resetForm(); }}>
-                  Cancel
+                  {t('common.cancel')}
                 </Button>
                 <Button type="submit" disabled={isSubmitting}>
-                  {isSubmitting ? 'Saving...' : editingAnnouncement ? 'Update' : 'Create'}
+                  {isSubmitting ? t('common.loading') : editingAnnouncement ? t('common.save') : t('common.create')}
                 </Button>
               </DialogFooter>
             </form>
@@ -319,19 +315,19 @@ export default function AnnouncementsPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Title</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Published</TableHead>
-                <TableHead>Creator</TableHead>
-                <TableHead>Pin</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>{t('announcement.announcementTitle')}</TableHead>
+                <TableHead>{t('announcement.type')}</TableHead>
+                <TableHead>{t('announcement.published')}</TableHead>
+                <TableHead>{t('announcement.creator')}</TableHead>
+                <TableHead>{t('announcement.pin')}</TableHead>
+                <TableHead className="text-right">{t('common.actions')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {announcements.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
-                    No announcements found
+                    {t('announcement.noAnnouncementsFound')}
                   </TableCell>
                 </TableRow>
               ) : (
@@ -381,17 +377,17 @@ export default function AnnouncementsPage() {
       <Dialog open={!!deleteId} onOpenChange={(open) => { if (!open) setDeleteId(null); }}>
         <DialogContent className="max-w-sm">
           <DialogHeader>
-            <DialogTitle>ยืนยันการลบ</DialogTitle>
+            <DialogTitle>{t('announcement.confirmDelete')}</DialogTitle>
             <DialogDescription>
-              คุณแน่ใจหรือไม่ว่าต้องการลบประกาศนี้? การกระทำนี้ไม่สามารถย้อนกลับได้
+              {t('announcement.confirmDeleteDesc')}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleteId(null)}>
-              Cancel
+              {t('common.cancel')}
             </Button>
             <Button variant="destructive" onClick={handleDelete}>
-              Delete
+              {t('common.delete')}
             </Button>
           </DialogFooter>
         </DialogContent>

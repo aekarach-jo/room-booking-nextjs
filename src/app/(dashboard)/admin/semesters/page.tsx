@@ -149,7 +149,7 @@ export default function SemestersPage() {
       });
 
       if (res.ok) {
-        toast.success('Current semester updated');
+        toast.success(t('success.updated'));
         fetchSemesters();
       }
     } catch (error) {
@@ -183,19 +183,19 @@ export default function SemestersPage() {
           <DialogTrigger asChild>
             <Button>
               <Plus className="h-4 w-4 mr-2" />
-              Add Semester
+              {t('admin.semesters.addSemester')}
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-md">
             <DialogHeader>
-              <DialogTitle>{editingSemester ? 'Edit Semester' : 'Add New Semester'}</DialogTitle>
+              <DialogTitle>{editingSemester ? t('admin.semesters.editSemester') : t('admin.semesters.addNewSemester')}</DialogTitle>
               <DialogDescription>
-                {editingSemester ? 'Update semester details' : 'Create a new academic semester'}
+                {editingSemester ? t('admin.semesters.updateSemesterDetails') : t('admin.semesters.createNewSemester')}
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label>Semester Name *</Label>
+                <Label>{t('admin.semesters.semesterName')} *</Label>
                 <Input
                   value={formData.name}
                   onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
@@ -206,7 +206,7 @@ export default function SemestersPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Start Date *</Label>
+                  <Label>{t('admin.semesters.startDate')} *</Label>
                   <Input
                     type="date"
                     value={formData.startDate}
@@ -215,7 +215,7 @@ export default function SemestersPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>End Date *</Label>
+                  <Label>{t('admin.semesters.endDate')} *</Label>
                   <Input
                     type="date"
                     value={formData.endDate}
@@ -231,15 +231,15 @@ export default function SemestersPage() {
                   checked={formData.isCurrent}
                   onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isCurrent: checked }))}
                 />
-                <Label htmlFor="isCurrent">Set as current semester</Label>
+                <Label htmlFor="isCurrent">{t('admin.semesters.setAsCurrent')}</Label>
               </div>
 
               <DialogFooter>
                 <Button type="button" variant="outline" onClick={() => { setIsDialogOpen(false); resetForm(); }}>
-                  Cancel
+                  {t('common.cancel')}
                 </Button>
                 <Button type="submit" disabled={isSubmitting}>
-                  {isSubmitting ? 'Saving...' : editingSemester ? 'Update' : 'Create'}
+                  {isSubmitting ? t('common.loading') : editingSemester ? t('common.save') : t('common.create')}
                 </Button>
               </DialogFooter>
             </form>
@@ -252,18 +252,18 @@ export default function SemestersPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Semester</TableHead>
-                <TableHead>Start Date</TableHead>
-                <TableHead>End Date</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>{t('admin.semesters.title')}</TableHead>
+                <TableHead>{t('admin.semesters.startDate')}</TableHead>
+                <TableHead>{t('admin.semesters.endDate')}</TableHead>
+                <TableHead>{t('common.status')}</TableHead>
+                <TableHead className="text-right">{t('common.actions')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {semesters.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
-                    No semesters found
+                    {t('admin.semesters.noSemestersFound')}
                   </TableCell>
                 </TableRow>
               ) : (
@@ -279,14 +279,14 @@ export default function SemestersPage() {
                     <TableCell>{formatDate(semester.endDate)}</TableCell>
                     <TableCell>
                       {semester.isCurrent ? (
-                        <Badge className="bg-green-500">Current</Badge>
+                        <Badge className="bg-green-500">{t('admin.semesters.current')}</Badge>
                       ) : (
                         <Button
                           variant="outline"
                           size="sm"
                           onClick={() => handleSetCurrent(semester)}
                         >
-                          Set Current
+                          {t('admin.semesters.setCurrent')}
                         </Button>
                       )}
                     </TableCell>
@@ -310,17 +310,17 @@ export default function SemestersPage() {
       <Dialog open={!!deleteId} onOpenChange={(open) => { if (!open) setDeleteId(null); }}>
         <DialogContent className="max-w-sm">
           <DialogHeader>
-            <DialogTitle>ยืนยันการลบ</DialogTitle>
+            <DialogTitle>{t('admin.semesters.confirmDelete')}</DialogTitle>
             <DialogDescription>
-              คุณแน่ใจหรือไม่ว่าต้องการลบภาคการศึกษานี้? การกระทำนี้ไม่สามารถย้อนกลับได้
+              {t('admin.semesters.confirmDeleteDesc')}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleteId(null)}>
-              Cancel
+              {t('common.cancel')}
             </Button>
             <Button variant="destructive" onClick={handleDelete}>
-              Delete
+              {t('common.delete')}
             </Button>
           </DialogFooter>
         </DialogContent>

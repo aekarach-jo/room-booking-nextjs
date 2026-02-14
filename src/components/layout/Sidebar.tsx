@@ -94,7 +94,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
             <div className="space-y-0.5">
               {userNavItems.map((item) => {
                 const Icon = item.icon;
-                const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href + '/') && !userNavItems.some(other => other.href !== item.href && other.href.length > item.href.length && pathname.startsWith(other.href)));
+                const isActive = pathname === item.href;
                 return (
                   <Link
                     key={item.href}

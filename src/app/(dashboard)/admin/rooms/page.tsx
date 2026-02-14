@@ -33,13 +33,7 @@ interface Room {
   createdAt: string;
 }
 
-const ROOM_TYPES = [
-  { value: 'LECTURE', label: 'Lecture Room' },
-  { value: 'COMPUTER_LAB', label: 'Computer Lab' },
-  { value: 'LABORATORY', label: 'Laboratory' },
-  { value: 'MEETING', label: 'Meeting Room' },
-  { value: 'STUDY', label: 'Study Room' },
-];
+const ROOM_TYPE_VALUES = ['LECTURE', 'COMPUTER_LAB', 'LABORATORY', 'MEETING', 'STUDY'];
 
 export default function RoomsPage() {
   const { t } = useTranslation();
@@ -204,7 +198,7 @@ export default function RoomsPage() {
       });
 
       if (res.ok) {
-        toast.success(`Room ${room.isActive ? 'deactivated' : 'activated'}`);
+        toast.success(t('success.updated'));
         fetchRooms();
       }
     } catch (error) {
@@ -230,19 +224,19 @@ export default function RoomsPage() {
           <DialogTrigger asChild>
             <Button>
               <Plus className="h-4 w-4 mr-2" />
-              Add Room
+              {t('room.addRoom')}
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>{editingRoom ? 'Edit Room' : 'Add New Room'}</DialogTitle>
+              <DialogTitle>{editingRoom ? t('room.editRoom') : t('room.addNewRoom')}</DialogTitle>
               <DialogDescription>
-                {editingRoom ? 'Update room details' : 'Create a new room for booking'}
+                {editingRoom ? t('room.updateRoomDetails') : t('room.createNewRoom')}
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label>Room Name *</Label>
+                <Label>{t('room.roomName')} *</Label>
                 <Input
                   value={formData.name}
                   onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
@@ -253,7 +247,7 @@ export default function RoomsPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Building</Label>
+                  <Label>{t('room.building')}</Label>
                   <Input
                     value={formData.building}
                     onChange={(e) => setFormData(prev => ({ ...prev, building: e.target.value }))}
@@ -261,7 +255,7 @@ export default function RoomsPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Floor</Label>
+                  <Label>{t('room.floor')}</Label>
                   <Input
                     type="number"
                     value={formData.floor}
@@ -273,7 +267,7 @@ export default function RoomsPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Capacity *</Label>
+                  <Label>{t('room.capacity')} *</Label>
                   <Input
                     type="number"
                     value={formData.capacity}
@@ -284,7 +278,7 @@ export default function RoomsPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Type</Label>
+                  <Label>{t('room.type')}</Label>
                   <Select
                     value={formData.type}
                     onValueChange={(value) => setFormData(prev => ({ ...prev, type: value }))}
@@ -293,9 +287,9 @@ export default function RoomsPage() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {ROOM_TYPES.map((type) => (
-                        <SelectItem key={type.value} value={type.value}>
-                          {type.label}
+                      {ROOM_TYPE_VALUES.map((value) => (
+                        <SelectItem key={value} value={value}>
+                          {t(`room.types.${value}`)}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -305,7 +299,7 @@ export default function RoomsPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Open Time</Label>
+                  <Label>{t('room.openTime')}</Label>
                   <Input
                     type="time"
                     value={formData.openTime}
@@ -313,7 +307,7 @@ export default function RoomsPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Close Time</Label>
+                  <Label>{t('room.closeTime')}</Label>
                   <Input
                     type="time"
                     value={formData.closeTime}
@@ -324,7 +318,7 @@ export default function RoomsPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Max Booking Hours</Label>
+                  <Label>{t('room.maxBookingHours')}</Label>
                   <Input
                     type="number"
                     value={formData.maxBookingHours}
@@ -334,7 +328,7 @@ export default function RoomsPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Advance Booking Days</Label>
+                  <Label>{t('room.advanceBookingDays')}</Label>
                   <Input
                     type="number"
                     value={formData.advanceBookingDays}
@@ -346,7 +340,7 @@ export default function RoomsPage() {
               </div>
 
               <div className="space-y-2">
-                <Label>Description</Label>
+                <Label>{t('room.description')}</Label>
                 <Textarea
                   value={formData.description}
                   onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
@@ -356,7 +350,7 @@ export default function RoomsPage() {
               </div>
 
               <div className="space-y-2">
-                <Label>Equipment (comma-separated)</Label>
+                <Label>{t('room.equipment')}</Label>
                 <Input
                   value={formData.equipment}
                   onChange={(e) => setFormData(prev => ({ ...prev, equipment: e.target.value }))}
@@ -371,7 +365,7 @@ export default function RoomsPage() {
                     checked={formData.requireApproval}
                     onCheckedChange={(checked) => setFormData(prev => ({ ...prev, requireApproval: checked }))}
                   />
-                  <Label htmlFor="requireApproval">Require Approval</Label>
+                  <Label htmlFor="requireApproval">{t('room.requireApproval')}</Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Switch
@@ -379,16 +373,16 @@ export default function RoomsPage() {
                     checked={formData.isActive}
                     onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isActive: checked }))}
                   />
-                  <Label htmlFor="isActive">Active</Label>
+                  <Label htmlFor="isActive">{t('room.active')}</Label>
                 </div>
               </div>
 
               <DialogFooter>
                 <Button type="button" variant="outline" onClick={() => { setIsDialogOpen(false); resetForm(); }}>
-                  Cancel
+                  {t('common.cancel')}
                 </Button>
                 <Button type="submit" disabled={isSubmitting}>
-                  {isSubmitting ? 'Saving...' : editingRoom ? 'Update' : 'Create'}
+                  {isSubmitting ? t('common.loading') : editingRoom ? t('common.save') : t('common.create')}
                 </Button>
               </DialogFooter>
             </form>
@@ -401,19 +395,19 @@ export default function RoomsPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Room</TableHead>
-                <TableHead>Location</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Capacity</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>{t('common.room')}</TableHead>
+                <TableHead>{t('room.location')}</TableHead>
+                <TableHead>{t('room.type')}</TableHead>
+                <TableHead>{t('room.capacity')}</TableHead>
+                <TableHead>{t('common.status')}</TableHead>
+                <TableHead className="text-right">{t('common.actions')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {rooms.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
-                    No rooms found
+                    {t('room.noRoomsFound')}
                   </TableCell>
                 </TableRow>
               ) : (
@@ -432,12 +426,12 @@ export default function RoomsPage() {
                     <TableCell>
                       <div className="flex items-center gap-1">
                         <MapPin className="h-4 w-4 text-muted-foreground" />
-                        {[room.building, room.floor ? `Floor ${room.floor}` : null].filter(Boolean).join(', ') || '-'}
+                        {[room.building, room.floor ? `${t('room.floor')} ${room.floor}` : null].filter(Boolean).join(', ') || '-'}
                       </div>
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline">
-                        {ROOM_TYPES.find(t => t.value === room.type)?.label || room.type}
+                        {ROOM_TYPE_VALUES.includes(room.type) ? t(`room.types.${room.type}`) : room.type}
                       </Badge>
                     </TableCell>
                     <TableCell>
@@ -472,17 +466,17 @@ export default function RoomsPage() {
       <Dialog open={!!deleteId} onOpenChange={(open) => { if (!open) setDeleteId(null); }}>
         <DialogContent className="max-w-sm">
           <DialogHeader>
-            <DialogTitle>ยืนยันการลบ</DialogTitle>
+            <DialogTitle>{t('room.confirmDelete')}</DialogTitle>
             <DialogDescription>
-              คุณแน่ใจหรือไม่ว่าต้องการลบห้องนี้? การกระทำนี้ไม่สามารถย้อนกลับได้
+              {t('room.confirmDeleteDesc')}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleteId(null)}>
-              Cancel
+              {t('common.cancel')}
             </Button>
             <Button variant="destructive" onClick={handleDelete}>
-              Delete
+              {t('common.delete')}
             </Button>
           </DialogFooter>
         </DialogContent>
