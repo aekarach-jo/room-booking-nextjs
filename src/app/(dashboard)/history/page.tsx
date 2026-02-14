@@ -16,10 +16,11 @@ interface Booking {
   endTime: string;
   purpose: string;
   status: string;
-  attendeeCount: number;
+  attendees: number;
   room: {
     name: string;
-    location: string;
+    building: string;
+    floor: string;
     type: string;
   };
   createdAt: string;
@@ -58,7 +59,7 @@ export default function HistoryPage() {
       if (res.ok) {
         const data = await res.json();
         setBookings(data.data || []);
-        setTotalPages(data.meta?.totalPages || 1);
+        setTotalPages(data.totalPages || 1);
       }
     } catch (error) {
       console.error('Error fetching history:', error);
@@ -167,7 +168,7 @@ export default function HistoryPage() {
                     <CardTitle className="text-lg">{booking.room.name}</CardTitle>
                     <CardDescription className="flex items-center gap-2 mt-1">
                       <MapPin className="h-4 w-4" />
-                      {booking.room.location}
+                      {booking.room.building} {booking.room.floor}
                     </CardDescription>
                   </div>
                   {getStatusBadge(booking.status)}
@@ -184,7 +185,7 @@ export default function HistoryPage() {
                     <span>{formatTime(booking.startTime)} - {formatTime(booking.endTime)}</span>
                   </div>
                   <div className="text-sm text-muted-foreground">
-                    {booking.attendeeCount} attendees
+                    {booking.attendees} attendees
                   </div>
                 </div>
                 {booking.purpose && (

@@ -32,7 +32,7 @@ const userNavItems = [
   { href: '/bookings/my', labelKey: 'navigation.myBookings', icon: Clock },
   { href: '/calendar', labelKey: 'navigation.calendar', icon: CalendarRange },
   { href: '/history', labelKey: 'navigation.history', icon: History },
-  { href: '/recurring', labelKey: 'navigation.recurring', icon: Repeat },
+  // { href: '/recurring', labelKey: 'navigation.recurring', icon: Repeat },
   { href: '/announcements', labelKey: 'navigation.announcements', icon: Megaphone },
 ];
 
@@ -41,7 +41,7 @@ const adminNavItems = [
   { href: '/admin/rooms', labelKey: 'navigation.rooms', icon: DoorOpen },
   { href: '/admin/users', labelKey: 'navigation.users', icon: Users },
   { href: '/admin/semesters', labelKey: 'navigation.semesters', icon: GraduationCap },
-  { href: '/admin/special-dates', labelKey: 'navigation.specialDates', icon: CalendarDays },
+  // { href: '/admin/special-dates', labelKey: 'navigation.specialDates', icon: CalendarDays },
   { href: '/admin/announcements', labelKey: 'navigation.announcements', icon: Megaphone },
 ];
 

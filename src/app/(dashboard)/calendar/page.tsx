@@ -209,7 +209,7 @@ export default function CalendarPage() {
 
               {/* Calendar days */}
               {days.map((day, index) => {
-                const dayBookings = day ? getBookingsForDay(day) : [];
+                const dayBookings = day ? getBookingsForDay(day).filter(b => b.status !== 'CANCELLED') : [];
                 const isToday = isCurrentMonth && day === today.getDate();
 
                 return (
