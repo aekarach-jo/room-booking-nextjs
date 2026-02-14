@@ -19,21 +19,26 @@ interface Room {
   id: string;
   name: string;
   description: string | null;
-  location: string;
+  building: string | null;
+  floor: number | null;
   capacity: number;
   type: string;
   equipment: string[];
   isActive: boolean;
+  openTime: string;
+  closeTime: string;
+  maxBookingHours: number;
+  advanceBookingDays: number;
+  requireApproval: boolean;
   createdAt: string;
 }
 
 const ROOM_TYPES = [
-  { value: 'CLASSROOM', label: 'Classroom' },
-  { value: 'MEETING_ROOM', label: 'Meeting Room' },
-  { value: 'LECTURE_HALL', label: 'Lecture Hall' },
+  { value: 'LECTURE', label: 'Lecture Room' },
+  { value: 'COMPUTER_LAB', label: 'Computer Lab' },
   { value: 'LABORATORY', label: 'Laboratory' },
-  { value: 'AUDITORIUM', label: 'Auditorium' },
-  { value: 'OTHER', label: 'Other' },
+  { value: 'MEETING', label: 'Meeting Room' },
+  { value: 'STUDY', label: 'Study Room' },
 ];
 
 export default function RoomsPage() {
@@ -47,11 +52,17 @@ export default function RoomsPage() {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    location: '',
+    building: '',
+    floor: '',
     capacity: '',
-    type: 'CLASSROOM',
+    type: 'LECTURE',
     equipment: '',
     isActive: true,
+    openTime: '08:00',
+    closeTime: '20:00',
+    maxBookingHours: '3',
+    advanceBookingDays: '7',
+    requireApproval: true,
   });
 
   useEffect(() => {
@@ -77,11 +88,17 @@ export default function RoomsPage() {
     setFormData({
       name: '',
       description: '',
-      location: '',
+      building: '',
+      floor: '',
       capacity: '',
-      type: 'CLASSROOM',
+      type: 'LECTURE',
       equipment: '',
       isActive: true,
+      openTime: '08:00',
+      closeTime: '20:00',
+      maxBookingHours: '3',
+      advanceBookingDays: '7',
+      requireApproval: true,
     });
     setEditingRoom(null);
   };
@@ -91,16 +108,22 @@ export default function RoomsPage() {
     setFormData({
       name: room.name,
       description: room.description || '',
-      location: room.location,
+      building: room.building || '',
+      floor: room.floor?.toString() || '',
       capacity: room.capacity.toString(),
       type: room.type,
       equipment: room.equipment?.join(', ') || '',
       isActive: room.isActive,
+      openTime: room.openTime || '08:00',
+      closeTime: room.closeTime || '20:00',
+      maxBookingHours: room.maxBookingHours?.toString() || '3',
+      advanceBookingDays: room.advanceBookingDays?.toString() || '7',
+      requireApproval: room.requireApproval ?? true,
     });
     setIsDialogOpen(true);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
 
@@ -108,11 +131,17 @@ export default function RoomsPage() {
       const payload = {
         name: formData.name,
         description: formData.description || undefined,
-        location: formData.location,
+        building: formData.building || undefined,
+        floor: formData.floor ? parseInt(formData.floor) : undefined,
         capacity: parseInt(formData.capacity),
         type: formData.type,
         equipment: formData.equipment ? formData.equipment.split(',').map(s => s.trim()).filter(Boolean) : [],
         isActive: formData.isActive,
+        openTime: formData.openTime,
+        closeTime: formData.closeTime,
+        maxBookingHours: parseInt(formData.maxBookingHours),
+        advanceBookingDays: parseInt(formData.advanceBookingDays),
+        requireApproval: formData.requireApproval,
       };
 
       const url = editingRoom ? `/api/rooms/${editingRoom.id}` : '/api/rooms';
@@ -202,7 +231,7 @@ export default function RoomsPage() {
               Add Room
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-md">
+          <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>{editingRoom ? 'Edit Room' : 'Add New Room'}</DialogTitle>
               <DialogDescription>
@@ -215,19 +244,29 @@ export default function RoomsPage() {
                 <Input
                   value={formData.name}
                   onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                  placeholder="e.g., Conference Room A"
+                  placeholder="e.g., Computer Lab 201"
                   required
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label>Location *</Label>
-                <Input
-                  value={formData.location}
-                  onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
-                  placeholder="e.g., Building A, Floor 2"
-                  required
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Building</Label>
+                  <Input
+                    value={formData.building}
+                    onChange={(e) => setFormData(prev => ({ ...prev, building: e.target.value }))}
+                    placeholder="e.g., Building B"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Floor</Label>
+                  <Input
+                    type="number"
+                    value={formData.floor}
+                    onChange={(e) => setFormData(prev => ({ ...prev, floor: e.target.value }))}
+                    placeholder="e.g., 2"
+                  />
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
@@ -262,6 +301,48 @@ export default function RoomsPage() {
                 </div>
               </div>
 
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Open Time</Label>
+                  <Input
+                    type="time"
+                    value={formData.openTime}
+                    onChange={(e) => setFormData(prev => ({ ...prev, openTime: e.target.value }))}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Close Time</Label>
+                  <Input
+                    type="time"
+                    value={formData.closeTime}
+                    onChange={(e) => setFormData(prev => ({ ...prev, closeTime: e.target.value }))}
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Max Booking Hours</Label>
+                  <Input
+                    type="number"
+                    value={formData.maxBookingHours}
+                    onChange={(e) => setFormData(prev => ({ ...prev, maxBookingHours: e.target.value }))}
+                    min="1"
+                    max="12"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Advance Booking Days</Label>
+                  <Input
+                    type="number"
+                    value={formData.advanceBookingDays}
+                    onChange={(e) => setFormData(prev => ({ ...prev, advanceBookingDays: e.target.value }))}
+                    min="1"
+                    max="90"
+                  />
+                </div>
+              </div>
+
               <div className="space-y-2">
                 <Label>Description</Label>
                 <Textarea
@@ -281,13 +362,23 @@ export default function RoomsPage() {
                 />
               </div>
 
-              <div className="flex items-center space-x-2">
-                <Switch
-                  id="isActive"
-                  checked={formData.isActive}
-                  onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isActive: checked }))}
-                />
-                <Label htmlFor="isActive">Active</Label>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="requireApproval"
+                    checked={formData.requireApproval}
+                    onCheckedChange={(checked) => setFormData(prev => ({ ...prev, requireApproval: checked }))}
+                  />
+                  <Label htmlFor="requireApproval">Require Approval</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="isActive"
+                    checked={formData.isActive}
+                    onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isActive: checked }))}
+                  />
+                  <Label htmlFor="isActive">Active</Label>
+                </div>
               </div>
 
               <DialogFooter>
@@ -339,7 +430,7 @@ export default function RoomsPage() {
                     <TableCell>
                       <div className="flex items-center gap-1">
                         <MapPin className="h-4 w-4 text-muted-foreground" />
-                        {room.location}
+                        {[room.building, room.floor ? `Floor ${room.floor}` : null].filter(Boolean).join(', ') || '-'}
                       </div>
                     </TableCell>
                     <TableCell>

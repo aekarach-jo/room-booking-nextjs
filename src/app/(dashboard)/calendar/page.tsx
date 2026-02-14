@@ -4,8 +4,8 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from '@/context/LanguageContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface Booking {
@@ -35,6 +35,7 @@ export default function CalendarPage() {
   const [selectedRoom, setSelectedRoom] = useState<string>('all');
   const [currentDate, setCurrentDate] = useState(new Date());
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedDay, setSelectedDay] = useState<number | null>(null);
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
@@ -134,6 +135,23 @@ export default function CalendarPage() {
   const today = new Date();
   const isCurrentMonth = today.getMonth() === month && today.getFullYear() === year;
 
+  const selectedDayBookings = selectedDay ? getBookingsForDay(selectedDay) : [];
+  const selectedDateLabel = selectedDay
+    ? new Date(year, month, selectedDay).toLocaleDateString('th-TH', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      })
+    : '';
+
+  const statusConfig: Record<string, { label: string; className: string }> = {
+    APPROVED: { label: 'อนุมัติแล้ว', className: 'bg-green-500/15 text-green-700 dark:text-green-400' },
+    PENDING: { label: 'รอการอนุมัติ', className: 'bg-yellow-500/15 text-yellow-700 dark:text-yellow-400' },
+    REJECTED: { label: 'ปฏิเสธ', className: 'bg-red-500/15 text-red-700 dark:text-red-400' },
+    CANCELLED: { label: 'ยกเลิกแล้ว', className: 'bg-muted text-muted-foreground' },
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -197,8 +215,9 @@ export default function CalendarPage() {
                 return (
                   <div
                     key={index}
+                    onClick={() => day && setSelectedDay(day)}
                     className={`min-h-24 p-1.5 border rounded-xl transition-colors ${
-                      day ? 'bg-card hover:bg-accent/30' : 'bg-muted/30'
+                      day ? 'bg-card hover:bg-accent/30 cursor-pointer' : 'bg-muted/30'
                     } ${isToday ? 'ring-2 ring-primary ring-offset-2' : 'border-border/50'}`}
                   >
                     {day && (
@@ -237,6 +256,51 @@ export default function CalendarPage() {
           )}
         </CardContent>
       </Card>
+
+      {/* Day Detail Dialog */}
+      <Dialog open={selectedDay !== null} onOpenChange={(open) => !open && setSelectedDay(null)}>
+        <DialogContent className="max-w-lg max-h-[80vh] flex flex-col">
+          <DialogHeader>
+            <DialogTitle className="text-base">{selectedDateLabel}</DialogTitle>
+          </DialogHeader>
+
+          {selectedDayBookings.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-10 text-muted-foreground">
+              <p className="text-sm">ไม่มีการจองในวันนี้</p>
+            </div>
+          ) : (
+            <div className="overflow-y-auto space-y-3 pr-1">
+              {selectedDayBookings.map((booking) => {
+                const status = statusConfig[booking.status] ?? { label: booking.status, className: 'bg-muted text-muted-foreground' };
+                return (
+                  <div key={booking.id} className="border border-border/60 rounded-xl p-4 space-y-2 bg-card">
+                    <div className="flex items-start justify-between gap-2">
+                      <p className="font-medium text-sm leading-snug">{booking.purpose}</p>
+                      <span className={`shrink-0 text-xs px-2 py-0.5 rounded-full font-medium ${status.className}`}>
+                        {status.label}
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs text-muted-foreground">
+                      <div className="flex items-center gap-1.5">
+                        <span className="opacity-60">🏢</span>
+                        <span>{booking.room.name}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="opacity-60">👤</span>
+                        <span>{booking.user.fullName}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5 col-span-2">
+                        <span className="opacity-60">🕐</span>
+                        <span>{formatTime(booking.startTime)} – {formatTime(booking.endTime)}</span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
