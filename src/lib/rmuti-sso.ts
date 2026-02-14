@@ -307,7 +307,7 @@ export function mapRMUTIUserTypeToRole(userType: string): 'STUDENT' | 'TEACHER' 
     return 'STUDENT';
   }
   if (type.includes('teacher') || type.includes('อาจารย์') || type.includes('lecturer')) {
-    return 'TEACHER';
+    return 'STAFF';
   }
   if (type.includes('staff') || type.includes('เจ้าหน้าที่') || type.includes('บุคลากร')) {
     return 'STAFF';

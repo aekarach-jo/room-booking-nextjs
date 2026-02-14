@@ -132,9 +132,13 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: 'Cannot delete yourself' }, { status: 400 });
     }
 
-    await prisma.user.delete({
-      where: { id },
-    });
+    await prisma.$transaction([
+      prisma.notification.deleteMany({ where: { userId: id } }),
+      prisma.booking.deleteMany({ where: { userId: id } }),
+      prisma.recurringBooking.deleteMany({ where: { userId: id } }),
+      prisma.announcement.deleteMany({ where: { createdBy: id } }),
+      prisma.user.delete({ where: { id } }),
+    ]);
 
     return NextResponse.json({ message: 'User deleted successfully' });
   } catch (error) {
