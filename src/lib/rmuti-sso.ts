@@ -35,53 +35,90 @@ export const RMUTI_SSO_CONFIG = {
 };
 
 // Types for RMUTI user data (ตาม API v3/profile)
+// Note: RMUTI API returns UPPERCASE keys
 export interface RMUTIUserInfo {
-  // ข้อมูลพื้นฐาน
-  id?: string;                  // RMUTI User ID
-  username?: string;            // Username
+  // ข้อมูลพื้นฐาน (lowercase)
+  id?: string;
+  username?: string;
   email?: string;
   
-  // ข้อมูลส่วนตัว
-  name_th?: string;             // ชื่อ-สกุล ภาษาไทย
-  name_en?: string;             // ชื่อ-สกุล ภาษาอังกฤษ
+  // ข้อมูลพื้นฐาน (UPPERCASE - actual RMUTI format)
+  USERNAME?: string;
+  EMAIL?: string;
+  TYPE?: string;
+  
+  // ข้อมูลนักศึกษา (UPPERCASE)
+  STUDENT_NO?: string;
+  CITIZEN_ID?: string;
+  PREFIX_TH?: string;
+  FIRST_NAME_TH?: string;
+  LAST_NAME_TH?: string;
+  PREFIX_EN?: string;
+  FIRST_NAME_EN?: string;
+  LAST_NAME_EN?: string;
+  GENDER?: string;
+  BIRTH_DATE?: string;
+  TELNO?: string;
+  
+  // ข้อมูลการศึกษา (UPPERCASE)
+  DEGREE_ID?: number;
+  DEGREE?: string;
+  YEARNO?: number;
+  PROGRAM_ID?: number;
+  PROGRAM_NAME_TH?: string;
+  PROGRAM_NAME_EN?: string;
+  DEPARTMENT_ID?: number;
+  DEPARTMENT_NAME_TH?: string;
+  DEPARTMENT_NAME_EN?: string;
+  FACULTY_ID?: number;
+  FACULTY_NAME_TH?: string;
+  FACULTY_NAME_EN?: string;
+  CAMPUS_ID?: string;
+  CAMPUS_NAME?: string;
+  STATUS_ID?: number;
+  STATUS_NAME?: string;
+  PICTURE?: string;
+  
+  // ข้อมูลบุคลากร (UPPERCASE)
+  EMPLOYEE_NO?: string;
+  POSITION?: string;
+  
+  // lowercase alternatives (for backward compatibility)
+  name_th?: string;
+  name_en?: string;
   firstname_th?: string;
   lastname_th?: string;
   firstname_en?: string;
   lastname_en?: string;
   fullname_th?: string;
   fullname_en?: string;
-  
-  // ข้อมูลนักศึกษา
-  student_id?: string;          // รหัสนักศึกษา
-  studentId?: string;           // alternative key
-  faculty?: string;             // คณะ
+  student_id?: string;
+  studentId?: string;
+  faculty?: string;
   faculty_name?: string;
-  department?: string;          // สาขา
+  department?: string;
   department_name?: string;
-  program?: string;             // หลักสูตร
-  degree_level?: string;        // ระดับการศึกษา
-  year?: number | string;       // ชั้นปี
-  campus?: string;              // วิทยาเขต
-  
-  // ข้อมูลบุคลากร
-  employee_id?: string;         // รหัสบุคลากร
-  employeeId?: string;          // alternative key
-  position?: string;            // ตำแหน่ง
-  
-  // ประเภทผู้ใช้
+  program?: string;
+  degree_level?: string;
+  year?: number | string;
+  campus?: string;
+  employee_id?: string;
+  employeeId?: string;
+  position?: string;
   user_type?: 'student' | 'staff' | 'teacher' | 'alumni' | string;
-  type?: string;                // alternative key
+  type?: string;
   role?: string;
-  
-  // ข้อมูลเพิ่มเติม
   picture?: string;
   avatar?: string;
   phone?: string;
   
-  // Response wrapper (บางครั้ง API อาจส่งมาใน data field)
+  // Response wrapper
   data?: RMUTIUserInfo;
   success?: boolean;
   message?: string;
+  
+  // Allow any other keys
+  [key: string]: unknown;
 }
 
 export interface RMUTITokenResponse {
@@ -179,6 +216,7 @@ export async function getUserInfo(accessToken: string): Promise<RMUTIUserInfo> {
 
 /**
  * Normalize RMUTI user data to consistent format
+ * Handles both UPPERCASE (actual RMUTI format) and lowercase keys
  */
 export function normalizeUserInfo(raw: RMUTIUserInfo): {
   rmutiId: string;
@@ -198,47 +236,64 @@ export function normalizeUserInfo(raw: RMUTIUserInfo): {
   year: number | null;
   userType: string;
 } {
-  // Get ID
-  const rmutiId = raw.id || raw.username || raw.student_id || raw.studentId || raw.employee_id || raw.employeeId || '';
+  // Get student/employee ID (UPPERCASE first, then lowercase)
+  const studentNo = raw.STUDENT_NO || raw.student_id || raw.studentId || null;
+  const employeeNo = raw.EMPLOYEE_NO || raw.employee_id || raw.employeeId || null;
   
-  // Get username (prefer student_id or employee_id)
-  const username = raw.student_id || raw.studentId || raw.employee_id || raw.employeeId || raw.username || rmutiId;
+  // Get username
+  const username = raw.USERNAME || raw.username || studentNo || employeeNo || '';
   
-  // Get full name (prefer Thai)
-  const fullName = raw.fullname_th || raw.name_th || 
-    (raw.firstname_th && raw.lastname_th ? `${raw.firstname_th} ${raw.lastname_th}` : null) ||
-    raw.fullname_en || raw.name_en ||
-    (raw.firstname_en && raw.lastname_en ? `${raw.firstname_en} ${raw.lastname_en}` : null) ||
-    username;
-
-  // Get full name English
-  const fullNameEn = raw.fullname_en || raw.name_en ||
-    (raw.firstname_en && raw.lastname_en ? `${raw.firstname_en} ${raw.lastname_en}` : null);
+  // Get RMUTI ID (use CITIZEN_ID or student/employee number as unique identifier)
+  const rmutiId = raw.CITIZEN_ID || raw.id || studentNo || employeeNo || username;
   
-  // Get year as number
+  // Get full name Thai (UPPERCASE format: PREFIX + FIRST_NAME + LAST_NAME)
+  const fullNameTh = raw.FIRST_NAME_TH && raw.LAST_NAME_TH 
+    ? `${raw.PREFIX_TH || ''}${raw.FIRST_NAME_TH} ${raw.LAST_NAME_TH}`.trim()
+    : raw.fullname_th || raw.name_th || 
+      (raw.firstname_th && raw.lastname_th ? `${raw.firstname_th} ${raw.lastname_th}` : null);
+  
+  // Get full name English (UPPERCASE format)
+  const fullNameEn = raw.FIRST_NAME_EN && raw.LAST_NAME_EN
+    ? `${raw.PREFIX_EN || ''}${raw.FIRST_NAME_EN} ${raw.LAST_NAME_EN}`.trim()
+    : raw.fullname_en || raw.name_en ||
+      (raw.firstname_en && raw.lastname_en ? `${raw.firstname_en} ${raw.lastname_en}` : null);
+  
+  // Final full name (prefer Thai)
+  const fullName = fullNameTh || fullNameEn || username;
+  
+  // Get year (calculate from YEARNO - admission year)
   let year: number | null = null;
-  if (raw.year) {
+  if (raw.YEARNO) {
+    // Calculate current year of study from admission year
+    const currentYear = new Date().getFullYear() + 543; // Buddhist year
+    const admissionYear = raw.YEARNO;
+    year = currentYear - admissionYear + 1;
+    if (year < 1 || year > 10) year = null; // Sanity check
+  } else if (raw.year) {
     year = typeof raw.year === 'number' ? raw.year : parseInt(raw.year, 10);
     if (isNaN(year)) year = null;
   }
+  
+  // Get user type
+  const userType = raw.TYPE || raw.user_type || raw.type || raw.role || 'student';
   
   return {
     rmutiId,
     username,
     fullName,
     fullNameEn: fullNameEn || null,
-    email: raw.email || null,
-    studentId: raw.student_id || raw.studentId || null,
-    employeeId: raw.employee_id || raw.employeeId || null,
-    department: raw.department_name || raw.department || null,
-    faculty: raw.faculty_name || raw.faculty || null,
-    program: raw.program || null,
-    degreeLevel: raw.degree_level || null,
-    campus: raw.campus || null,
-    phone: raw.phone || null,
-    avatar: raw.picture || raw.avatar || null,
+    email: raw.EMAIL || raw.email || null,
+    studentId: studentNo,
+    employeeId: employeeNo,
+    department: raw.DEPARTMENT_NAME_TH || raw.DEPARTMENT_NAME_EN || raw.department_name || raw.department || null,
+    faculty: raw.FACULTY_NAME_TH || raw.FACULTY_NAME_EN || raw.faculty_name || raw.faculty || null,
+    program: raw.PROGRAM_NAME_TH || raw.PROGRAM_NAME_EN || raw.program || null,
+    degreeLevel: raw.DEGREE || raw.degree_level || null,
+    campus: raw.CAMPUS_NAME || raw.campus || null,
+    phone: raw.TELNO || raw.phone || null,
+    avatar: raw.PICTURE || raw.picture || raw.avatar || null,
     year,
-    userType: raw.user_type || raw.type || raw.role || 'student',
+    userType: userType.toLowerCase(),
   };
 }
 

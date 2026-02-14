@@ -57,11 +57,11 @@ export async function GET(request: NextRequest) {
     // Get user info from RMUTI API
     console.log('RMUTI SSO: Fetching user info...');
     const rmutiUserRaw = await getUserInfo(tokens.access_token);
-    console.log('RMUTI SSO: Got user info:', rmutiUserRaw);
+    console.log('RMUTI SSO: Got user info (RAW):', JSON.stringify(rmutiUserRaw, null, 2));
     
     // Normalize the user data
     const rmutiUser = normalizeUserInfo(rmutiUserRaw);
-    console.log('RMUTI SSO: Normalized user:', rmutiUser);
+    console.log('RMUTI SSO: Normalized user:', JSON.stringify(rmutiUser, null, 2));
 
     // Create or update user in database
     const user = await upsertUserFromRMUTI(rmutiUser);
