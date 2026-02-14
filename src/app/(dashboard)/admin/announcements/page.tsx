@@ -42,6 +42,7 @@ export default function AnnouncementsPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingAnnouncement, setEditingAnnouncement] = useState<Announcement | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
     title: '',
@@ -137,17 +138,18 @@ export default function AnnouncementsPage() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this announcement?')) return;
+  const handleDelete = async () => {
+    if (!deleteId) return;
 
     try {
-      const res = await fetch(`/api/announcements/${id}`, {
+      const res = await fetch(`/api/announcements/${deleteId}`, {
         method: 'DELETE',
         credentials: 'include',
       });
 
       if (res.ok) {
         toast.success(t('success.deleted'));
+        setDeleteId(null);
         fetchAnnouncements();
       } else {
         toast.error(t('errors.somethingWentWrong'));
@@ -363,7 +365,7 @@ export default function AnnouncementsPage() {
                         <Button variant="ghost" size="icon" onClick={() => openEditDialog(announcement)}>
                           <Pencil className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="icon" onClick={() => handleDelete(announcement.id)}>
+                        <Button variant="ghost" size="icon" onClick={() => setDeleteId(announcement.id)}>
                           <Trash2 className="h-4 w-4 text-destructive" />
                         </Button>
                       </div>
@@ -375,6 +377,25 @@ export default function AnnouncementsPage() {
           </Table>
         </CardContent>
       </Card>
+
+      <Dialog open={!!deleteId} onOpenChange={(open) => { if (!open) setDeleteId(null); }}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>ยืนยันการลบ</DialogTitle>
+            <DialogDescription>
+              คุณแน่ใจหรือไม่ว่าต้องการลบประกาศนี้? การกระทำนี้ไม่สามารถย้อนกลับได้
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteId(null)}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleDelete}>
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -29,6 +29,7 @@ export default function SemestersPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingSemester, setEditingSemester] = useState<Semester | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -116,17 +117,18 @@ export default function SemestersPage() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this semester?')) return;
+  const handleDelete = async () => {
+    if (!deleteId) return;
 
     try {
-      const res = await fetch(`/api/semesters/${id}`, {
+      const res = await fetch(`/api/semesters/${deleteId}`, {
         method: 'DELETE',
         credentials: 'include',
       });
 
       if (res.ok) {
         toast.success(t('success.deleted'));
+        setDeleteId(null);
         fetchSemesters();
       } else {
         toast.error(t('errors.somethingWentWrong'));
@@ -293,7 +295,7 @@ export default function SemestersPage() {
                         <Button variant="ghost" size="icon" onClick={() => openEditDialog(semester)}>
                           <Pencil className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="icon" onClick={() => handleDelete(semester.id)}>
+                        <Button variant="ghost" size="icon" onClick={() => setDeleteId(semester.id)}>
                           <Trash2 className="h-4 w-4 text-destructive" />
                         </Button>
                       </div>
@@ -305,6 +307,24 @@ export default function SemestersPage() {
           </Table>
         </CardContent>
       </Card>
+      <Dialog open={!!deleteId} onOpenChange={(open) => { if (!open) setDeleteId(null); }}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>ยืนยันการลบ</DialogTitle>
+            <DialogDescription>
+              คุณแน่ใจหรือไม่ว่าต้องการลบภาคการศึกษานี้? การกระทำนี้ไม่สามารถย้อนกลับได้
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteId(null)}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleDelete}>
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

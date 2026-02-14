@@ -48,6 +48,7 @@ export default function RoomsPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingRoom, setEditingRoom] = useState<Room | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -171,17 +172,18 @@ export default function RoomsPage() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this room?')) return;
+  const handleDelete = async () => {
+    if (!deleteId) return;
 
     try {
-      const res = await fetch(`/api/rooms/${id}`, {
+      const res = await fetch(`/api/rooms/${deleteId}`, {
         method: 'DELETE',
         credentials: 'include',
       });
 
       if (res.ok) {
         toast.success(t('success.deleted'));
+        setDeleteId(null);
         fetchRooms();
       } else {
         toast.error(t('errors.somethingWentWrong'));
@@ -455,7 +457,7 @@ export default function RoomsPage() {
                         <Button variant="ghost" size="icon" onClick={() => openEditDialog(room)}>
                           <Pencil className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="icon" onClick={() => handleDelete(room.id)}>
+                        <Button variant="ghost" size="icon" onClick={() => setDeleteId(room.id)}>
                           <Trash2 className="h-4 w-4 text-destructive" />
                         </Button>
                       </div>
@@ -467,6 +469,24 @@ export default function RoomsPage() {
           </Table>
         </CardContent>
       </Card>
+      <Dialog open={!!deleteId} onOpenChange={(open) => { if (!open) setDeleteId(null); }}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>ยืนยันการลบ</DialogTitle>
+            <DialogDescription>
+              คุณแน่ใจหรือไม่ว่าต้องการลบห้องนี้? การกระทำนี้ไม่สามารถย้อนกลับได้
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteId(null)}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleDelete}>
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
