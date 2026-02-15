@@ -2,6 +2,13 @@
 
 ระบบจองห้องเรียน/ห้องประชุม พัฒนาด้วย Next.js 16, Prisma และ PostgreSQL
 
+## 📚 Documentation / เอกสารประกอบ
+
+สำหรับเอกสารประกอบวิทยานิพนธ์/โครงงานที่สมบูรณ์ (8 บท) โปรดดูที่:
+- **[📖 เอกสารทั้งหมด (docs/)](./docs/README.md)** - คลิกเพื่ดูเอกสารครบทุกบท
+
+เอกสารรวม: ภาพรวมระบบ, Database Design, Architecture, API, UI Design, User Manual, Deployment, Testing
+
 ## Tech Stack
 
 - **Framework:** Next.js 16 (App Router)
