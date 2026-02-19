@@ -22,7 +22,7 @@ interface BookingEmailData {
   roomName: string;
   date: string;
   startTime: string;
-  endTime: string;
+  endTime: string; 
   purpose: string;
   attendees: number;
   approvalToken: string;
