@@ -22,6 +22,7 @@ export default function RegisterPage() {
     password: '',
     confirmPassword: '',
     fullName: '',
+    email: '',
     role: 'STUDENT' as 'STUDENT' | 'TEACHER',
     studentId: '',
     teacherId: '',
@@ -49,6 +50,7 @@ export default function RegisterPage() {
         username: formData.username,
         password: formData.password,
         fullName: formData.fullName,
+        email: formData.email,
         role: formData.role,
         studentId: formData.role === 'STUDENT' ? formData.studentId : undefined,
         teacherId: formData.role === 'TEACHER' ? formData.teacherId : undefined,
@@ -87,6 +89,20 @@ export default function RegisterPage() {
               placeholder={t('auth.fullName')}
               value={formData.fullName}
               onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+              required
+              disabled={isLoading}
+              className="h-11 rounded-xl border-input/50 focus:border-primary transition-colors"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="email" className="text-sm font-medium">{t('auth.email')}</Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="example@rmuti.ac.th"
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               required
               disabled={isLoading}
               className="h-11 rounded-xl border-input/50 focus:border-primary transition-colors"

@@ -88,6 +88,14 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
       delete updateData.suspendedUntil;
     }
 
+    // RMUTI accounts cannot have their email changed
+    if ('email' in updateData) {
+      const targetUser = await prisma.user.findUnique({ where: { id }, select: { rmutiId: true } });
+      if (targetUser?.rmutiId) {
+        delete updateData.email;
+      }
+    }
+
     const user = await prisma.user.update({
       where: { id },
       data: updateData,

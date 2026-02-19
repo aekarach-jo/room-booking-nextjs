@@ -16,7 +16,8 @@ import { toast } from 'sonner';
 
 interface User {
   id: string;
-  email: string;
+  email: string | null;
+  rmutiId: string | null;
   fullName: string;
   department: string;
   role: string;
@@ -94,7 +95,7 @@ export default function UsersPage() {
   const openEditDialog = (user: User) => {
     setEditingUser(user);
     setFormData({
-      email: user.email,
+      email: user.email ?? '',
       fullName: user.fullName,
       department: user.department,
       role: user.role,
@@ -232,14 +233,18 @@ export default function UsersPage() {
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label>{t('admin.users.email')} *</Label>
+                <Label>{t('admin.users.email')} {!editingUser?.rmutiId && '*'}</Label>
                 <Input
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
                   placeholder="user@example.com"
-                  required
+                  required={!editingUser}
+                  disabled={!!editingUser?.rmutiId}
                 />
+                {editingUser?.rmutiId && (
+                  <p className="text-xs text-muted-foreground">{t('admin.users.rmutiEmailReadOnly')}</p>
+                )}
               </div>
 
               <div className="space-y-2">

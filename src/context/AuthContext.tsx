@@ -49,6 +49,7 @@ interface RegisterData {
   username: string;
   password: string;
   fullName: string;
+  email: string;
   role: 'STUDENT' | 'TEACHER';
   studentId?: string;
   teacherId?: string;

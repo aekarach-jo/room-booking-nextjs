@@ -44,6 +44,8 @@ export async function GET(request: NextRequest) {
           id: true,
           username: true,
           fullName: true,
+          email: true,
+          rmutiId: true,
           role: true,
           studentId: true,
           teacherId: true,

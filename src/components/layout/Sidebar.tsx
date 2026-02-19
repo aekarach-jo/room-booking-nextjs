@@ -18,6 +18,7 @@ import {
   GraduationCap,
   CalendarRange,
   X,
+  Settings,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -43,6 +44,7 @@ const adminNavItems = [
   { href: '/admin/semesters', labelKey: 'navigation.semesters', icon: GraduationCap },
   // { href: '/admin/special-dates', labelKey: 'navigation.specialDates', icon: CalendarDays },
   { href: '/admin/announcements', labelKey: 'navigation.announcements', icon: Megaphone },
+  { href: '/admin/settings', labelKey: 'navigation.emailSettings', icon: Settings },
 ];
 
 export function Sidebar({ isOpen, onClose }: SidebarProps) {

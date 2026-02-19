@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { randomBytes } from 'crypto';
 import { prisma } from '@/lib/prisma';
 import { verifyAuth, isAdmin } from '@/lib/auth';
 import { createBookingSchema } from '@/lib/validations/booking';
+import { sendBookingApprovalEmail } from '@/lib/email';
 
 // GET /api/bookings - List bookings
 export async function GET(request: NextRequest) {
@@ -247,6 +249,53 @@ export async function POST(request: NextRequest) {
           message: `Your booking for ${booking.room.name} has been submitted and is pending approval.`,
         },
       });
+
+      // Generate approval token and send email to configured recipients
+      const token = randomBytes(32).toString('hex');
+      const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
+
+      await prisma.bookingApprovalToken.create({
+        data: { token, bookingId: booking.id, expiresAt },
+      });
+
+      // Get student email
+      const studentUser = await prisma.user.findUnique({
+        where: { id: user.id },
+        select: { email: true, fullName: true },
+      });
+
+      // Get configured email recipients from system settings
+      const recipientSetting = await prisma.systemSetting.findUnique({
+        where: { key: 'email_notification_recipients' },
+      });
+      const recipientIds: string[] = Array.isArray(recipientSetting?.value)
+        ? (recipientSetting!.value as string[])
+        : [];
+
+      const recipients = recipientIds.length > 0
+        ? await prisma.user.findMany({
+            where: { id: { in: recipientIds }, isActive: true, email: { not: null } },
+            select: { fullName: true, email: true },
+          })
+        : [];
+
+      if (recipients.length > 0) {
+        sendBookingApprovalEmail(
+          {
+            bookingId: booking.id,
+            studentName: studentUser?.fullName || user.username,
+            studentEmail: studentUser?.email || null,
+            roomName: booking.room.name,
+            date: booking.date.toISOString(),
+            startTime: booking.startTime.toISOString(),
+            endTime: booking.endTime.toISOString(),
+            purpose: booking.purpose,
+            attendees: booking.attendees,
+            approvalToken: token,
+          },
+          recipients.map((r) => ({ name: r.fullName, email: r.email! }))
+        ).catch((err) => console.error('Email send error:', err));
+      }
     }
 
     return NextResponse.json(booking, { status: 201 });

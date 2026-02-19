@@ -70,7 +70,8 @@
     "rooms": "Rooms",
     "users": "Users",
     "semesters": "Semesters",
-    "specialDates": "Special Dates"
+    "specialDates": "Special Dates",
+    "emailSettings": "Email Settings"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -255,6 +256,7 @@
       "department": "Department",
       "password": "Password",
       "newPassword": "New Password (leave blank to keep current)",
+      "rmutiEmailReadOnly": "Email is managed by RMUTI and cannot be changed here.",
       "searchPlaceholder": "Search by name or email...",
       "noUsersFound": "No users found",
       "pageOf": "Page {page} of {total}",

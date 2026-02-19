@@ -70,7 +70,8 @@
     "rooms": "ห้อง",
     "users": "ผู้ใช้",
     "semesters": "ภาคการศึกษา",
-    "specialDates": "วันพิเศษ"
+    "specialDates": "วันพิเศษ",
+    "emailSettings": "ตั้งค่า Email"
   },
   "dashboard": {
     "title": "แดชบอร์ด",
@@ -255,6 +256,7 @@
       "department": "แผนก/ภาควิชา",
       "password": "รหัสผ่าน",
       "newPassword": "รหัสผ่านใหม่ (เว้นว่างไว้เพื่อคงรหัสผ่านเดิม)",
+      "rmutiEmailReadOnly": "อีเมลถูกจัดการโดย RMUTI ไม่สามารถแก้ไขได้ที่นี่",
       "searchPlaceholder": "ค้นหาตามชื่อหรืออีเมล...",
       "noUsersFound": "ไม่พบผู้ใช้",
       "pageOf": "หน้า {page} จาก {total}",

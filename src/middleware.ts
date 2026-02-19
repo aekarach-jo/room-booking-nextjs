@@ -33,11 +33,12 @@ export async function middleware(request: NextRequest) {
 
   // Check if it's an API route
   if (pathname.startsWith('/api/')) {
-    // Allow auth routes without token (login, register, RMUTI SSO)
+    // Allow auth routes without token (login, register, RMUTI SSO, booking approval)
     if (
-      pathname.startsWith('/api/auth/login') || 
+      pathname.startsWith('/api/auth/login') ||
       pathname.startsWith('/api/auth/register') ||
-      pathname.startsWith('/api/auth/rmuti')
+      pathname.startsWith('/api/auth/rmuti') ||
+      pathname.startsWith('/api/bookings/approve-by-token')
     ) {
       return NextResponse.next();
     }
@@ -75,6 +76,11 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(new URL('/', request.url));
       }
     }
+    return NextResponse.next();
+  }
+
+  // Public pages that don't require auth
+  if (pathname.startsWith('/approve-booking')) {
     return NextResponse.next();
   }
 
