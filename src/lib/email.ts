@@ -131,7 +131,7 @@ function buildApprovalEmailHtml(data: BookingEmailData): string {
                   <td align="center" style="padding-bottom:16px;">
                     <a href="${approvalUrl}"
                        style="display:inline-block;background-color:#2563eb;color:#ffffff;text-decoration:none;padding:14px 40px;border-radius:8px;font-size:15px;font-weight:600;letter-spacing:0.01em;">
-                      ดูคำขอและตัดสินใจ →
+                      ดูคำขอ →
                     </a>
                   </td>
                 </tr>
