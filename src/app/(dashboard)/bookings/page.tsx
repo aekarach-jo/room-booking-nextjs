@@ -68,7 +68,7 @@ export default function BookingPage() {
   const handleRoomSelect = (roomId: string) => {
     const room = rooms.find(r => r.id === roomId);
     setSelectedRoom(room || null);
-    setFormData({ ...formData, roomId });
+    setFormData({ ...formData, roomId, startTime: '', endTime: '' });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -86,6 +86,16 @@ export default function BookingPage() {
     if (endDateTime <= startDateTime) {
       toast.error(t('errors.somethingWentWrong'));
       return;
+    }
+
+    // Validate against room operating hours
+    if (selectedRoom) {
+      const openTime = selectedRoom.openTime || '00:00';
+      const closeTime = selectedRoom.closeTime || '23:59';
+      if (formData.startTime < openTime || formData.endTime > closeTime) {
+        toast.error(`ห้องนี้เปิดให้ใช้งาน ${openTime} - ${closeTime} น. เท่านั้น`);
+        return;
+      }
     }
 
     setIsSubmitting(true);
@@ -245,8 +255,10 @@ export default function BookingPage() {
                     <Input
                       id="startTime"
                       type="time"
+                      min={selectedRoom?.openTime || '00:00'}
+                      max={selectedRoom?.closeTime || '23:59'}
                       value={formData.startTime}
-                      onChange={(e) => setFormData({ ...formData, startTime: e.target.value })}
+                      onChange={(e) => setFormData({ ...formData, startTime: e.target.value, endTime: '' })}
                       required
                       disabled={!selectedRoom || isSubmitting}
                       className="h-11 rounded-xl"
@@ -257,6 +269,8 @@ export default function BookingPage() {
                     <Input
                       id="endTime"
                       type="time"
+                      min={formData.startTime || selectedRoom?.openTime || '00:00'}
+                      max={selectedRoom?.closeTime || '23:59'}
                       value={formData.endTime}
                       onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
                       required
@@ -265,6 +279,12 @@ export default function BookingPage() {
                     />
                   </div>
                 </div>
+                {selectedRoom && (
+                  <p className="text-xs text-muted-foreground -mt-2">
+                    <Clock className="inline h-3 w-3 mr-1" />
+                    {t('booking.startTime')} {selectedRoom.openTime || '00:00'} – {selectedRoom.closeTime || '23:59'} น.
+                  </p>
+                )}
 
                 <div className="space-y-2">
                   <Label htmlFor="attendees" className="text-sm font-medium">Number of Attendees</Label>

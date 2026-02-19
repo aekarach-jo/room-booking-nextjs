@@ -162,6 +162,28 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Check room operating hours
+    if (room.openTime || room.closeTime) {
+      const toMinutes = (dt: Date) => {
+        const h = parseInt(new Intl.DateTimeFormat('en', { hour: 'numeric', hour12: false, timeZone: 'Asia/Bangkok' }).format(dt));
+        const m = parseInt(new Intl.DateTimeFormat('en', { minute: 'numeric', timeZone: 'Asia/Bangkok' }).format(dt));
+        return h * 60 + m;
+      };
+      const parseTime = (t: string) => { const [h, m] = t.split(':').map(Number); return h * 60 + m; };
+
+      const openMinutes = parseTime(room.openTime || '00:00');
+      const closeMinutes = parseTime(room.closeTime || '23:59');
+      const startMinutes = toMinutes(startDateTime);
+      const endMinutes = toMinutes(endDateTime);
+
+      if (startMinutes < openMinutes || endMinutes > closeMinutes) {
+        return NextResponse.json(
+          { error: `ห้องนี้เปิดให้ใช้งาน ${room.openTime || '00:00'} - ${room.closeTime || '23:59'} น. เท่านั้น` },
+          { status: 400 }
+        );
+      }
+    }
+
     // Check for overlapping bookings
     const overlappingBooking = await prisma.booking.findFirst({
       where: {
