@@ -29,6 +29,7 @@ function formatDate(dateStr: string): string {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
+    timeZone: 'Asia/Bangkok',
   });
 }
 
@@ -37,6 +38,7 @@ function formatTime(timeStr: string): string {
     hour: '2-digit',
     minute: '2-digit',
     hour12: false,
+    timeZone: 'Asia/Bangkok',
   });
 }
 
@@ -307,7 +309,7 @@ export default function ApproveBookingPage() {
             </div>
 
             <p className="text-xs text-center text-zinc-400">
-              ลิงก์นี้หมดอายุ {new Date(booking.expiresAt).toLocaleDateString('th-TH')}
+              ลิงก์นี้หมดอายุ {new Date(booking.expiresAt).toLocaleDateString('th-TH', { timeZone: 'Asia/Bangkok' })}
             </p>
           </CardContent>
         </Card>

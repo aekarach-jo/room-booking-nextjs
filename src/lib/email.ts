@@ -39,6 +39,7 @@ function formatDate(dateStr: string): string {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
+    timeZone: 'Asia/Bangkok',
   });
 }
 
@@ -47,6 +48,7 @@ function formatTime(timeStr: string): string {
     hour: '2-digit',
     minute: '2-digit',
     hour12: false,
+    timeZone: 'Asia/Bangkok',
   });
 }
 
